@@ -1,0 +1,20 @@
+# Python
+backend/.venv/
+backend/__pycache__/
+backend/**/*.pyc
+
+# Environment variables
+backend/.env
+
+# Flutter
+frontend/restourant_app/.dart_tool/
+frontend/restourant_app/build/
+frontend/restourant_app/.flutter-plugins
+frontend/restourant_app/.flutter-plugins-dependencies
+
+# IDE
+.idea/
+.vscode/
+
+# OS
+.DS_Store
