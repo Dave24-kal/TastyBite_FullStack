@@ -1,4 +1,5 @@
-from pydantic import BaseModel, EmailStr, Field
+import re
+from pydantic import BaseModel, EmailStr, Field, field_validator, ConfigDict
 from pydantic import field_validator
 
 
@@ -11,13 +12,11 @@ class UserCreate(BaseModel):
     @field_validator("phone")
     @classmethod
     def validate_phone(cls, value: str) -> str:
-        if not (
-            value.startswith("09")
-            or value.startswith("+2519")
-            or value.startswith("9")
-        ):
-            raise ValueError("Invalid Ethiopian phone number")
+        pattern = r"(\+125|0)?9\d{8}"
 
+        if not re.fullmatch(pattern, value):
+            raise ValueError("Invalid phone number format")
+            
         return value
 
     @field_validator("password")
@@ -39,6 +38,8 @@ class UserCreate(BaseModel):
 
 
 class UserResponse(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
     id: int
     full_name: str
     phone: str
