@@ -1,4 +1,7 @@
 import 'package:shared_preferences/shared_preferences.dart';
+import 'dart: convert';
+import 'package:http/http.dart' as http;
+import '../config.dart';
 
 class AuthException implements Exception {
   final String code;
@@ -7,70 +10,76 @@ class AuthException implements Exception {
 }
 
 class AuthenticationService {
-  static const String _emailKey = 'auth_email';
-  static const String _passwordKey = 'auth_password';
-  static const String _signedInKey = 'auth_signed_in';
-  static const String _currentEmailKey = 'auth_current_email';
-
   Future<void> register({
+    required String fullname,
+    required String phone,
     required String email,
     required String password,
   }) async {
-    final prefs = await SharedPreferences.getInstance();
-    final existingEmail = prefs.getString(_emailKey);
-
-    if (existingEmail == email) {
-      throw AuthException('email-already-in-use');
+    final url= Uri.parse(
+      '${APIConfig.baseUrl}/auth/register'
+    );
+    try{
+       final response = await http.post(
+        url,
+        headers: {
+          'content-type': 'application/json',
+        },
+        body: jsonEncode({
+          'full_name': fullName.trim(),
+          'phone': phone.trim(),
+          'email': email.trim().toLowerCase(),
+          'password': password,
+        }),
+      );
+      if (response.statusCode == 201) {
+        return;
+      }
+      if (response.statusCode == 409) {
+        throw AuthException('email-already-in-use');
+      }
+      if (response.statusCode == 422) {
+        throw AuthException('invalid-data');
+      }
+        throw AuthException('server-error');
+    } on AuthException {
+      rethrow;
+    } catch (e) {
+      throw AuthException('network-request-failed');
     }
-
-    await prefs.setString(_emailKey, email);
-    await prefs.setString(_passwordKey, password);
-    await prefs.setBool(_signedInKey, true);
-    await prefs.setString(_currentEmailKey, email);
   }
+
+
+       
 
   Future<void> signIn({
     required String email,
     required String password,
-  }) async {
-    final prefs = await SharedPreferences.getInstance();
-    final storedEmail = prefs.getString(_emailKey);
-    final storedPassword = prefs.getString(_passwordKey);
-
-    if (storedEmail == null || storedPassword == null) {
-      throw AuthException('user-not-found');
-    }
-
-    if (storedEmail != email || storedPassword != password) {
-      throw AuthException('wrong-password');
-    }
-
-    await prefs.setBool(_signedInKey, true);
-    await prefs.setString(_currentEmailKey, email);
+  })async {
+    throw AuthException('login-not-connected');
   }
-
   Future<void> signOut() async {
     final prefs = await SharedPreferences.getInstance();
-    await prefs.setBool(_signedInKey, false);
-    await prefs.remove(_currentEmailKey);
+
+    await prefs.setBool('auth_signed_in', false);
+    await prefs.remove('auth_current_email');
   }
 
-  Future<void> resetPassword({required String email}) async {
-    final prefs = await SharedPreferences.getInstance();
-    final storedEmail = prefs.getString(_emailKey);
-
-    if (storedEmail != email) {
-      throw AuthException('user-not-found');
-    }
+  Future<void> resetPassword({
+    required String email,
+  }) async {
+    throw AuthException('password-reset-not-connected');
   }
 
   Future<bool> isSignedIn() async {
     final prefs = await SharedPreferences.getInstance();
-    return prefs.getBool(_signedInKey) ?? false;
+
+    return prefs.getBool('auth_signed_in') ?? false;
   }
 
   Future<String?> get currentEmail async {
     final prefs = await SharedPreferences.getInstance();
-    return prefs.getString(_currentEmailKey);
+
+    return prefs.getString('auth_current_email');
   }
 }
