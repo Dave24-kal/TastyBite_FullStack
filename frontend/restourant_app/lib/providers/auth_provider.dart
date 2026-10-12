@@ -23,8 +23,8 @@ class AuthProvider extends ChangeNotifier {
 
     try {
       await _authService.register(
-        fullname: fullname
-        phone: phone
+        fullname: fullname,
+        phone: phone,
         email: email,
         password: password,
       );
