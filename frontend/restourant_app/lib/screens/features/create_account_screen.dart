@@ -71,6 +71,8 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
   final authProvider = context.read<AuthProvider>();
 
   final success = await authProvider.register(
+    fullname: _fullNameController.text.trim(),
+    phone: _phonecontroller.text.trim(),
     email: _emailController.text.trim(),
     password: _passwordController.text,
   );
