@@ -12,7 +12,7 @@ class AuthProvider extends ChangeNotifier {
   String? get errorMessage => _errorMessage;
 
   Future<bool> register({
-    required String fulname,
+    required String fullName,
     required String phone,
     required String email,
     required String password,
@@ -23,7 +23,7 @@ class AuthProvider extends ChangeNotifier {
 
     try {
       await _authService.register(
-        fullname: fullname,
+        fullName: fullName,
         phone: phone,
         email: email,
         password: password,

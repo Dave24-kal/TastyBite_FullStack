@@ -11,13 +11,13 @@ class AuthException implements Exception {
 
 class AuthenticationService {
   Future<void> register({
-    required String fullname,
+    required String fullName,
     required String phone,
     required String email,
     required String password,
   }) async {
     final url= Uri.parse(
-      '${APIConfig.baseUrl}/auth/register'
+      '${ApiConfig.baseUrl}/auth/register'
     );
     try{
        final response = await http.post(
