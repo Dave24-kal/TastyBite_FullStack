@@ -1,6 +1,10 @@
-import 'package:shared_preferences/shared_preferences.dart';
+import 'dart:async';
 import 'dart:convert';
+
+import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
+
 import '../config/api_config.dart';
 
 class AuthException implements Exception {
@@ -16,48 +20,61 @@ class AuthenticationService {
     required String email,
     required String password,
   }) async {
-    final url= Uri.parse(
-      '${ApiConfig.baseUrl}/auth/register'
+    final url = Uri.parse(
+      '${ApiConfig.baseUrl}/auth/register',
     );
-    try{
-       final response = await http.post(
-        url,
-        headers: {
-          'content-type': 'application/json',
-        },
-        body: jsonEncode({
-          'full_name': fullName.trim(),
-          'phone': phone.trim(),
-          'email': email.trim().toLowerCase(),
-          'password': password,
-        }),
+
+    try {
+      final response = await http
+          .post(
+            url,
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: jsonEncode({
+              'full_name': fullName.trim(),
+              'phone': phone.trim(),
+              'email': email.trim().toLowerCase(),
+              'password': password,
+            }),
+          )
+          .timeout(const Duration(seconds: 10));
+
+      debugPrint(
+        'Registration response: ${response.statusCode}',
       );
+
       if (response.statusCode == 201) {
         return;
       }
+
       if (response.statusCode == 409) {
         throw AuthException('email-already-in-use');
       }
+
       if (response.statusCode == 422) {
         throw AuthException('invalid-data');
       }
-        throw AuthException('server-error');
+
+      throw AuthException('server-error');
     } on AuthException {
       rethrow;
+    } on TimeoutException {
+      debugPrint('Registration request timed out.');
+      throw AuthException('network-request-failed');
     } catch (e) {
+      debugPrint('Registration request failed: $e');
       throw AuthException('network-request-failed');
     }
   }
 
-
-       
-
   Future<void> signIn({
     required String email,
     required String password,
-  })async {
+  }) async {
     throw AuthException('login-not-connected');
   }
+
   Future<void> signOut() async {
     final prefs = await SharedPreferences.getInstance();
 
