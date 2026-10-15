@@ -301,6 +301,9 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
                   },
 
                   obscureText: _isPasswordHidden,
+                  onChanged: (_) {
+                    _formKey.currentState?.validate();
+                  },
                   validator: (value) {
                     if (value == null || value.isEmpty) {
                       return 'Please enter your password';
