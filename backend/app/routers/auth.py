@@ -4,7 +4,7 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
 from app.core.database import get_db
-from app.core.security import hash_password
+from app.core.security import hash_password, verify_password
 from app.models.user import User
 from app.schemas.user import UserCreate, UserResponse
 
@@ -67,3 +67,22 @@ def register(
     )
 
     return new_user
+    @router.post("/login", response_model=UserResponse)
+def login(
+    email: str,
+    password: str,
+    db: Session = Depends(get_db)
+):
+    normalized_email = email.lower().strip()
+
+    user = db.scalar(
+        select(User).where(User.email == normalized_email)
+    )
+
+    if user is None or not verify_password(password, user.password_hash):
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid email or password"
+        )
+
+    return user
