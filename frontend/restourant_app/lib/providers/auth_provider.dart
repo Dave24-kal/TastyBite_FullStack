@@ -78,30 +78,36 @@ class AuthProvider extends ChangeNotifier {
   }
 
   String _getAuthErrorMessage(AuthException e) {
-    switch (e.code) {
-      case 'email-already-in-use':
-        return 'An account already exists with this email.';
+  switch (e.code) {
+    case 'email-already-in-use':
+      return 'An account already exists with this email.';
 
-      case 'invalid-email':
-        return 'Please enter a valid email address.';
+    case 'phone-already-in-use':
+      return 'This phone number is already registered.';
 
-      case 'weak-password':
-        return 'Your password is too weak.';
+    case 'account-already-exists':
+      return 'An account already exists with these details.';
 
-      case 'user-not-found':
-        return 'No account found with this email.';
+    case 'invalid-email':
+      return 'Please enter a valid email address.';
 
-      case 'wrong-password':
-        return 'Incorrect email or password.';
+    case 'weak-password':
+      return 'Your password is too weak.';
 
-      case 'network-request-failed':
-        return 'Please check your internet connection.';
+    case 'user-not-found':
+      return 'No account found with this email.';
 
-      case 'operation-not-allowed':
-        return 'Email and password authentication is not enabled.';
+    case 'wrong-password':
+      return 'Incorrect email or password.';
 
-      default:
-        return 'Unable to create your account. Please try again.';
-    }
+    case 'network-request-failed':
+      return 'Please check your internet connection.';
+
+    case 'operation-not-allowed':
+      return 'Email and password authentication is not enabled.';
+
+    default:
+      return 'Unable to create your account. Please try again.';
   }
+}
 }

@@ -49,8 +49,20 @@ class AuthenticationService {
       }
 
       if (response.statusCode == 409) {
-        throw AuthException('email-already-in-use');
-      }
+  final responseData = jsonDecode(response.body);
+
+  final message = responseData['detail']?.toString() ?? '';
+
+  if (message.toLowerCase().contains('phone')) {
+    throw AuthException('phone-already-in-use');
+  }
+
+  if (message.toLowerCase().contains('email')) {
+    throw AuthException('email-already-in-use');
+  }
+
+  throw AuthException('account-already-exists');
+}
 
       if (response.statusCode == 422) {
         throw AuthException('invalid-data');

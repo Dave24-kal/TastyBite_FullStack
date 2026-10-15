@@ -22,7 +22,8 @@ class User(Base):
 
     phone: Mapped[str] = mapped_column(
         String(20),
-        nullable=False
+        nullable=False,
+        unique= True
 )
 
     email: Mapped[str] = mapped_column(

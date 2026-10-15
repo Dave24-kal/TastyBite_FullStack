@@ -35,6 +35,15 @@ def register(
             status_code=status.HTTP_409_CONFLICT,
             detail="Email already registered"
         )
+    existing_phone = db.scalar(
+        select(User).where(User.phone == user_data.phone)
+    )
+
+    if existing_phone:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail="Phone number already registered"
+    )
 
     new_user = User(
         full_name=user_data.full_name,
@@ -53,7 +62,7 @@ def register(
 
         raise HTTPException(
             status_code=status.HTTP_409_CONFLICT,
-            detail="A user with this email already exists"
-        )
+            detail="Email or phone number already registered"
+    )
 
     return new_user
