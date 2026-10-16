@@ -1,6 +1,5 @@
 import re
 from pydantic import BaseModel, EmailStr, Field, field_validator, ConfigDict
-from pydantic import field_validator
 
 
 class UserCreate(BaseModel):
@@ -44,3 +43,12 @@ class UserResponse(BaseModel):
     full_name: str
     phone: str
     email: EmailStr
+
+class UserLogin(BaseModel):
+    email: EmailStr
+    password: str
+
+class TokenResponse(BaseModel):
+    access_token: str
+    token_type: str = "bearer"
+    user: UserResponse

@@ -106,6 +106,15 @@ class AuthProvider extends ChangeNotifier {
     case 'operation-not-allowed':
       return 'Email and password authentication is not enabled.';
 
+    case 'invalid-credentials':
+      return 'Incorrect email or password.';
+
+    case 'invalid-data':
+      return 'Please check your email and password.';
+
+    case 'server-error':
+      return 'The server encountered a problem. Please try again.';
+
     default:
       return 'Unable to create your account. Please try again.';
   }

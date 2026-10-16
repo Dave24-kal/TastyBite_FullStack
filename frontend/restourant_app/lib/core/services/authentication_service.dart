@@ -81,11 +81,68 @@ class AuthenticationService {
   }
 
   Future<void> signIn({
-    required String email,
-    required String password,
-  }) async {
-    throw AuthException('login-not-connected');
+  required String email,
+  required String password,
+}) async {
+  final url = Uri.parse(
+    '${ApiConfig.baseUrl}/auth/login',
+  );
+
+  try {
+    final response = await http
+        .post(
+          url,
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: jsonEncode({
+            'email': email.trim().toLowerCase(),
+            'password': password,
+          }),
+        )
+        .timeout(const Duration(seconds: 10));
+
+    debugPrint(
+      'Login response: ${response.statusCode}',
+    );
+
+    if (response.statusCode == 200) {
+      final responseData = jsonDecode(response.body);
+
+      final loggedInEmail =
+          responseData['email']?.toString() ??
+          email.trim().toLowerCase();
+
+      final prefs = await SharedPreferences.getInstance();
+
+      await prefs.setBool('auth_signed_in', true);
+      await prefs.setString(
+        'auth_current_email',
+        loggedInEmail,
+      );
+
+      return;
+    }
+
+    if (response.statusCode == 401) {
+      throw AuthException('invalid-credentials');
+    }
+
+    if (response.statusCode == 422) {
+      throw AuthException('invalid-data');
+    }
+
+    throw AuthException('server-error');
+  } on AuthException {
+    rethrow;
+  } on TimeoutException {
+    debugPrint('Login request timed out.');
+    throw AuthException('network-request-failed');
+  } catch (e) {
+    debugPrint('Login request failed: $e');
+    throw AuthException('network-request-failed');
   }
+}
 
   Future<void> signOut() async {
     final prefs = await SharedPreferences.getInstance();
