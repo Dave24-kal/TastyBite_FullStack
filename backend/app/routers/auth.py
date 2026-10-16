@@ -1,3 +1,4 @@
+from app.core.dependencies import get_current_user
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy import select
 from sqlalchemy.exc import IntegrityError
@@ -79,6 +80,7 @@ def register(
 
 
 @router.post("/login", response_model=UserResponse)
+@router.post("/login", response_model=TokenResponse)
 def login(
     user_data: UserLogin,
     db: Session = Depends(get_db)
@@ -98,4 +100,19 @@ def login(
             detail="Invalid email or password"
         )
 
-    return user
+    access_token = create_access_token(
+        user_id=user.id,
+        email=user.email,
+    )
+
+    return {
+        "access_token": access_token,
+        "token_type": "bearer",
+        "user": user,
+    }
+
+@router.get("/me", response_model=UserResponse)
+def read_current_user(
+    current_user: User = Depends(get_current_user),
+):
+    return current_user
