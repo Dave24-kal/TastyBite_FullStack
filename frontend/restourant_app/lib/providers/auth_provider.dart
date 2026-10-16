@@ -7,9 +7,11 @@ class AuthProvider extends ChangeNotifier {
 
   bool _isLoading = false;
   String? _errorMessage;
+  Map<String, dynamic>? _currentUser;
 
   bool get isLoading => _isLoading;
   String? get errorMessage => _errorMessage;
+  Map<String, dynamic>? get currentUser => _currentUser;
 
   Future<bool> register({
     required String fullName,
@@ -58,12 +60,24 @@ class AuthProvider extends ChangeNotifier {
 
     try {
       await _authService.signIn(
-        email: email,
-        password: password,
-      );
-      _isLoading = false;
-      notifyListeners();
-      return true;
+  email: email,
+  password: password,
+);
+
+final userLoaded = await loadCurrentUser();
+
+if (!userLoaded) {
+  await _authService.signOut();
+  _currentUser = null;
+  _isLoading = false;
+  notifyListeners();
+  return false;
+}
+
+_isLoading = false;
+notifyListeners();
+
+return true;
     } on AuthException catch (e) {
       _isLoading = false;
       _errorMessage = _getAuthErrorMessage(e);
@@ -76,6 +90,42 @@ class AuthProvider extends ChangeNotifier {
       return false;
     }
   }
+  Future<bool> loadCurrentUser() async {
+  _errorMessage = null;
+  notifyListeners();
+
+  try {
+    final user = await _authService.getCurrentUser();
+
+    _currentUser = user;
+
+    notifyListeners();
+
+    return true;
+  } on AuthException catch (e) {
+    _currentUser = null;
+    _errorMessage = _getAuthErrorMessage(e);
+
+    notifyListeners();
+
+    return false;
+  } catch (e) {
+    _currentUser = null;
+    _errorMessage = 'Unable to load your account. Please try again.';
+
+    notifyListeners();
+
+    return false;
+  }
+}
+Future<void> signOut() async {
+  await _authService.signOut();
+
+  _currentUser = null;
+  _errorMessage = null;
+
+  notifyListeners();
+}
 
   String _getAuthErrorMessage(AuthException e) {
   switch (e.code) {
@@ -114,6 +164,15 @@ class AuthProvider extends ChangeNotifier {
 
     case 'server-error':
       return 'The server encountered a problem. Please try again.';
+
+    case 'not-authenticated':
+      return 'Please sign in to continue.';
+
+    case 'session-expired':
+      return 'Your session has expired. Please sign in again.';
+
+    case 'invalid-server-response':
+      return 'The server returned an invalid response.';
 
     default:
       return 'Unable to create your account. Please try again.';
