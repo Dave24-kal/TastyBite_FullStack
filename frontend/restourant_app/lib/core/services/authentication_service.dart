@@ -1,3 +1,4 @@
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'dart:async';
 import 'dart:convert';
 
@@ -14,6 +15,8 @@ class AuthException implements Exception {
 }
 
 class AuthenticationService {
+  final FlutterSecureStorage _secureStorage =
+    const FlutterSecureStorage();
   Future<void> register({
     required String fullName,
     required String phone,
