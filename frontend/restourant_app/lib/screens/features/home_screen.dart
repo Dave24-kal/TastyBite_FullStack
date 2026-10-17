@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../core/theme/app_colors.dart';
+import 'profile_screen.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -49,8 +50,7 @@ class HomeScreen extends StatelessWidget {
         ),
       ),
 
-      bottomNavigationBar: _buildBottomNavigation(),
-    );
+        bottomNavigationBar: _buildBottomNavigation(context),    );
   }
 
   Widget _buildHeader() {
@@ -433,37 +433,47 @@ class HomeScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildBottomNavigation() {
-    return BottomNavigationBar(
-      type: BottomNavigationBarType.fixed,
-      currentIndex: 0,
-      backgroundColor: Colors.white,
-      selectedItemColor: AppColors.primary,
-      unselectedItemColor: AppColors.textSecondary,
-      selectedFontSize: 12,
-      unselectedFontSize: 12,
-      items: const [
-        BottomNavigationBarItem(
-          icon: Icon(Icons.home_rounded),
-          label: 'Home',
-        ),
-        BottomNavigationBarItem(
-          icon: Icon(Icons.explore_outlined),
-          label: 'Explore',
-        ),
-        BottomNavigationBarItem(
-          icon: Icon(Icons.shopping_bag_outlined),
-          label: 'Cart',
-        ),
-        BottomNavigationBarItem(
-          icon: Icon(Icons.favorite_border_rounded),
-          label: 'Favorites',
-        ),
-        BottomNavigationBarItem(
-          icon: Icon(Icons.person_outline_rounded),
-          label: 'Profile',
-        ),
-      ],
-    );
-  }
+  Widget _buildBottomNavigation(BuildContext context) {
+  return BottomNavigationBar(
+    type: BottomNavigationBarType.fixed,
+    currentIndex: 0,
+    backgroundColor: Colors.white,
+    selectedItemColor: AppColors.primary,
+    unselectedItemColor: AppColors.textSecondary,
+    selectedFontSize: 12,
+    unselectedFontSize: 12,
+    onTap: (index) {
+      if (index == 4) {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => const ProfileScreen(),
+          ),
+        );
+      }
+    },
+    items: const [
+      BottomNavigationBarItem(
+        icon: Icon(Icons.home_rounded),
+        label: 'Home',
+      ),
+      BottomNavigationBarItem(
+        icon: Icon(Icons.explore_outlined),
+        label: 'Explore',
+      ),
+      BottomNavigationBarItem(
+        icon: Icon(Icons.shopping_bag_outlined),
+        label: 'Cart',
+      ),
+      BottomNavigationBarItem(
+        icon: Icon(Icons.favorite_border_rounded),
+        label: 'Favorites',
+      ),
+      BottomNavigationBarItem(
+        icon: Icon(Icons.person_outline_rounded),
+        label: 'Profile',
+      ),
+    ],
+  );
+}
 }
