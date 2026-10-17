@@ -5,6 +5,7 @@ import '../../widgets/app_text_field.dart';
 import '../features/forget_pass_screen.dart';
 import 'package:provider/provider.dart';
 import '../../providers/auth_provider.dart';
+import 'home_screen.dart';
 
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({super.key});
@@ -48,12 +49,13 @@ class _SignUpScreenState extends State<SignUpScreen> {
   if (!mounted) return;
 
   if (success) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Signed in successfully!'),
+    Navigator.pushAndRemoveUntil(
+      context,
+      MaterialPageRoute(
+        builder: (context) => const HomeScreen(),
       ),
+      (route) => false,
     );
-
   } else {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
@@ -65,7 +67,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
     );
   }
 }
-
   @override
   Widget build(BuildContext context) {
     final isLoading = context.watch<AuthProvider>().isLoading;
