@@ -4,6 +4,7 @@ import '../../widgets/app_text_field.dart';
 import '../features/sign_up_screen.dart';
 import '../../providers/auth_provider.dart';
 import 'package:provider/provider.dart';
+import 'home_screen.dart';
 
 class CreateAccountScreen extends StatefulWidget {
   const CreateAccountScreen({super.key});
@@ -80,23 +81,29 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
   if (!mounted) return;
 
   if (success) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text(
-          'Account created successfully!',
-        ),
+  ScaffoldMessenger.of(context).showSnackBar(
+    const SnackBar(
+      content: Text('Account created successfully!'),
+    ),
+  );
+
+  Navigator.pushAndRemoveUntil(
+    context,
+    MaterialPageRoute(
+      builder: (context) => const HomeScreen(),
+    ),
+    (route) => false,
+  );
+} else {
+  ScaffoldMessenger.of(context).showSnackBar(
+    SnackBar(
+      content: Text(
+        authProvider.errorMessage ??
+            'Unable to create your account.',
       ),
-    );
-  } else {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(
-          authProvider.errorMessage ??
-              'Unable to create your account.',
-        ),
-      ),
-    );
-  }
+    ),
+  );
+}
 }
 
   @override

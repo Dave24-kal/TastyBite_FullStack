@@ -14,42 +14,47 @@ class AuthProvider extends ChangeNotifier {
   Map<String, dynamic>? get currentUser => _currentUser;
 
   Future<bool> register({
-    required String fullName,
-    required String phone,
-    required String email,
-    required String password,
-  }) async {
-    _isLoading = true;
-    _errorMessage = null;
-    notifyListeners();
+  required String fullName,
+  required String phone,
+  required String email,
+  required String password,
+}) async {
+  _isLoading = true;
+  _errorMessage = null;
+  notifyListeners();
 
-    try {
-      await _authService.register(
-        fullName: fullName,
-        phone: phone,
-        email: email,
-        password: password,
-      );
+  try {
+    await _authService.register(
+      fullName: fullName,
+      phone: phone,
+      email: email,
+      password: password,
+    );
 
-      _isLoading = false;
-      notifyListeners();
+    final signInSuccess = await signIn(
+      email: email,
+      password: password,
+    );
 
-      return true;
-    } on AuthException catch (e) {
-      _isLoading = false;
-      _errorMessage = _getAuthErrorMessage(e);
-      notifyListeners();
-
-      return false;
-    } catch (e) {
-      _isLoading = false;
-      _errorMessage = 'Something went wrong. Please try again.';
-      notifyListeners();
-
+    if (!signInSuccess) {
       return false;
     }
-  }
 
+    return true;
+  } on AuthException catch (e) {
+    _isLoading = false;
+    _errorMessage = _getAuthErrorMessage(e);
+    notifyListeners();
+
+    return false;
+  } catch (e) {
+    _isLoading = false;
+    _errorMessage = 'Something went wrong. Please try again.';
+    notifyListeners();
+
+    return false;
+  }
+}
   Future<bool> signIn({
     required String email,
     required String password,

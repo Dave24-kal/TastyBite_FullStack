@@ -3,6 +3,10 @@ import '../../core/theme/app_colors.dart';
 import '../../core/services/onboarding_storage_service.dart';
 import '../onboarding/onboarding_screen.dart';
 import 'package:restourant_app/screens/features/welcome_screen.dart';
+import 'package:provider/provider.dart';
+
+import '../../providers/auth_provider.dart';
+import '../features/home_screen.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -21,18 +25,29 @@ class _SplashScreenState extends State<SplashScreen> {
   }
 
   Future<void> _checkOnboardingStatus() async {
-    await Future.delayed(const Duration(seconds: 3));
+  await Future.delayed(const Duration(seconds: 3));
 
-    final bool isCompleted = await _storageService.isOnboardingCompleted();
+  final bool isCompleted =
+      await _storageService.isOnboardingCompleted();
 
-    if (!mounted) return;
+  if (!mounted) return;
 
-    if (isCompleted) {
-      _openWelcomeScreen();
-    } else {
-      _openOnboardingScreen();
-    }
+  if (!isCompleted) {
+    _openOnboardingScreen();
+    return;
   }
+
+  final bool isSignedIn =
+      await context.read<AuthProvider>().loadCurrentUser();
+
+  if (!mounted) return;
+
+  if (isSignedIn) {
+    _openHomeScreen();
+  } else {
+    _openWelcomeScreen();
+  }
+}
 
   void _openOnboardingScreen() {
     Navigator.pushReplacement(
@@ -47,7 +62,14 @@ class _SplashScreenState extends State<SplashScreen> {
       MaterialPageRoute(builder: (context) => const WelcomeScreen()),
     );
   }
-
+  void _openHomeScreen() {
+  Navigator.pushReplacement(
+    context,
+    MaterialPageRoute(
+      builder: (context) => const HomeScreen(),
+    ),
+  );
+}
   @override
   Widget build(BuildContext context) {
     return Scaffold(
