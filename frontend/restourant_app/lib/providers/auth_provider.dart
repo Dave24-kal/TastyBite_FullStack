@@ -77,7 +77,7 @@ if (!userLoaded) {
 _isLoading = false;
 notifyListeners();
 
-return true;
+return true;6
     } on AuthException catch (e) {
       _isLoading = false;
       _errorMessage = _getAuthErrorMessage(e);
