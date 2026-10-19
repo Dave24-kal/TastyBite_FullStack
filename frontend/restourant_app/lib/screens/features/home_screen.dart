@@ -1,10 +1,28 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import '../../core/theme/app_colors.dart';
+import '../../providers/food_provider.dart';
 import 'profile_screen.dart';
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
+
+  @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  @override
+  void initState(){
+    super.initState();
+    
+    WidgetsBinding.instance.addPostFrameCallback((_){
+      if (!mounted) return;
+
+      context.read<FoodProvider>().fetchFoods();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -302,136 +320,154 @@ class HomeScreen extends StatelessWidget {
   }
 
   Widget _buildPopularMeals() {
-    final meals = [
-      {
-        'name': 'Classic Burger',
-        'price': '250 ETB',
-        'rating': '4.8',
-        'icon': Icons.lunch_dining_rounded,
-      },
-      {
-        'name': 'Cheese Pizza',
-        'price': '400 ETB',
-        'rating': '4.9',
-        'icon': Icons.local_pizza_rounded,
-      },
-      {
-        'name': 'Grilled Chicken',
-        'price': '350 ETB',
-        'rating': '4.7',
-        'icon': Icons.set_meal_rounded,
-      },
-      {
-        'name': 'Fresh Juice',
-        'price': '120 ETB',
-        'rating': '4.6',
-        'icon': Icons.local_cafe_rounded,
-      },
-    ];
+  final foodProvider = context.watch<FoodProvider>();
 
-    return GridView.builder(
-      shrinkWrap: true,
-      physics: const NeverScrollableScrollPhysics(),
-      itemCount: meals.length,
-      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 2,
-        crossAxisSpacing: 14,
-        mainAxisSpacing: 14,
-        mainAxisExtent: 220,
+  if (foodProvider.isLoading && foodProvider.foods.isEmpty) {
+    return const Padding(
+      padding: EdgeInsets.symmetric(vertical: 30),
+      child: Center(
+        child: CircularProgressIndicator(
+          color: Color(0xFFFF6B00),
+        ),
       ),
-      itemBuilder: (context, index) {
-        final meal = meals[index];
+    );
+  }
 
-        return Container(
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(18),
-            border: Border.all(
-              color: const Color(0xFFE5E7EB),
+  if (foodProvider.errorMessage != null &&
+      foodProvider.foods.isEmpty) {
+    return Center(
+      child: Column(
+        children: [
+          const Text(
+            'Could not load meals.',
+            style: TextStyle(
+              fontSize: 14,
+              color: Color(0xFF6B7280),
             ),
           ),
+          const SizedBox(height: 10),
+          ElevatedButton(
+            onPressed: () {
+              context.read<FoodProvider>().fetchFoods();
+            },
+            child: const Text('Try Again'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  if (foodProvider.foods.isEmpty) {
+    return const Center(
+      child: Padding(
+        padding: EdgeInsets.symmetric(vertical: 24),
+        child: Text(
+          'No meals available right now.',
+          style: TextStyle(
+            color: Color(0xFF6B7280),
+            fontSize: 14,
+          ),
+        ),
+      ),
+    );
+  }
+
+  final meals = foodProvider.foods;
+
+  return GridView.builder(
+    shrinkWrap: true,
+    physics: const NeverScrollableScrollPhysics(),
+    itemCount: meals.length,
+    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+      crossAxisCount: 2,
+      crossAxisSpacing: 14,
+      mainAxisSpacing: 14,
+      mainAxisExtent: 220,
+    ),
+    itemBuilder: (context, index) {
+      final meal = meals[index];
+
+      final name = meal['name']?.toString() ?? 'Unnamed food';
+      final price = meal['price'];
+      final category =
+          (meal['category'] ?? '').toString().toLowerCase();
+
+      final priceText = price == null ? 'Price unavailable' : '$price ETB';
+
+      final IconData mealIcon;
+
+      if (category.contains('burger')) {
+        mealIcon = Icons.lunch_dining_rounded;
+      } else if (category.contains('pizza')) {
+        mealIcon = Icons.local_pizza_rounded;
+      } else if (category.contains('drink')) {
+        mealIcon = Icons.local_cafe_rounded;
+      } else if (category.contains('chicken')) {
+        mealIcon = Icons.set_meal_rounded;
+      } else {
+        mealIcon = Icons.restaurant_rounded;
+      }
+
+      return Container(
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(18),
+          border: Border.all(
+            color: const Color(0xFFEEEEEE),
+          ),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(12),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Expanded(
-                child: Container(
-                  width: double.infinity,
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFFFF0E5),
-                    borderRadius: const BorderRadius.vertical(
-                      top: Radius.circular(17),
-                    ),
-                  ),
-                  child: Icon(
-                    meal['icon'] as IconData,
-                    size: 65,
-                    color: AppColors.primary,
-                  ),
+              // Food image placeholder.
+              Container(
+                height: 105,
+                width: double.infinity,
+                decoration: BoxDecoration(
+                  color: const Color(0xFFFFF0E5),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Icon(
+                  mealIcon,
+                  size: 48,
+                  color: const Color(0xFFFF6B00),
                 ),
               ),
 
-              Padding(
-                padding: const EdgeInsets.all(12),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      meal['name'] as String,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.bold,
-                        color: AppColors.textPrimary,
-                      ),
-                    ),
+              const SizedBox(height: 10),
 
-                    const SizedBox(height: 8),
+              // Food name from the database.
+              Text(
+                name,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: const TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                  color: Color(0xFF1F2937),
+                ),
+              ),
 
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Flexible(
-                          child: Text(
-                            meal['price'] as String,
-                            overflow: TextOverflow.ellipsis,
-                            style: const TextStyle(
-                              fontSize: 13,
-                              color: Color(0xFFFF6B00),
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ),
+              const Spacer(),
 
-                        Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            const Icon(
-                              Icons.star_rounded,
-                              color: Color(0xFFFFB800),
-                              size: 16,
-                            ),
-
-                            Text(
-                              meal['rating'] as String,
-                              style: TextStyle(
-                                fontSize: 12,
-                                color: AppColors.textSecondary,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ],
+              // Food price from the database.
+              Text(
+                priceText,
+                style: const TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.bold,
+                  color: Color(0xFFFF6B00),
                 ),
               ),
             ],
           ),
-        );
-      },
-    );
-  }
+        ),
+      );
+    },
+  );
+}
 
   Widget _buildBottomNavigation(BuildContext context) {
   return BottomNavigationBar(
