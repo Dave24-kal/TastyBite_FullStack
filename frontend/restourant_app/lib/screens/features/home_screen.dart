@@ -15,7 +15,11 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   String _selectedCategory = 'All';
 
-  
+  final TextEditingController _searchController = TextEditingController();
+
+  String _searchQuery = '';
+
+
   @override
   void initState(){
     super.initState();
@@ -125,39 +129,56 @@ class _HomeScreenState extends State<HomeScreen> {
 
    
   Widget _buildSearchBar() {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16),
-      height: 54,
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color: const Color(0xFFE5E7EB),
+  return Container(
+    padding: const EdgeInsets.symmetric(horizontal: 16),
+    height: 54,
+    decoration: BoxDecoration(
+      color: Colors.white,
+      borderRadius: BorderRadius.circular(16),
+      border: Border.all(color: const Color(0xFFE5E7EB)),
+    ),
+    child: Row(
+      children: [
+        Icon(
+          Icons.search_rounded,
+          color: AppColors.textSecondary,
+          size: 25,
         ),
-      ),
-      child: Row(
-        children: [
-          Icon(
-            Icons.search_rounded,
-            color: AppColors.textSecondary,
-            size: 25,
-          ),
-
-          const SizedBox(width: 12),
-
-          Expanded(
-            child: Text(
-              'Search meals or restaurants',
-              style: TextStyle(
-                fontSize: 14,
-                color: AppColors.textSecondary,
-              ),
+        const SizedBox(width: 12),
+        Expanded(
+          child: TextField(
+            controller: _searchController,
+            onChanged: (value) {
+              setState(() {
+                _searchQuery = value.trim().toLowerCase();
+              });
+            },
+            decoration: const InputDecoration(
+              hintText: 'Search meals or restaurants',
+              border: InputBorder.none,
+              isCollapsed: true,
             ),
           ),
-        ],
-      ),
-    );
-  }
+        ),
+        if (_searchQuery.isNotEmpty)
+          GestureDetector(
+            onTap: () {
+              _searchController.clear();
+
+              setState(() {
+                _searchQuery = '';
+              });
+            },
+            child: const Icon(
+              Icons.close_rounded,
+              color: AppColors.textSecondary,
+              size: 22,
+            ),
+          ),
+      ],
+    ),
+  );
+}
 
   Widget _buildPromoBanner() {
     return Container(
@@ -286,37 +307,48 @@ class _HomeScreenState extends State<HomeScreen> {
         itemBuilder: (context, index) {
           final category = categories[index];
 
-          return Column(
-            children: [
-              Container(
-                width: 64,
-                height: 64,
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(18),
-                  border: Border.all(
-                    color: const Color(0xFFE5E7EB),
-                  ),
-                ),
-                child: Icon(
-                  category['icon'] as IconData,
-                  color: AppColors.primary,
-                  size: 30,
-                ),
-              ),
-
-              const SizedBox(height: 8),
-
-              Text(
-                category['name'] as String,
-                style: TextStyle(
-                  fontSize: 12,
-                  color: AppColors.textPrimary,
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
-            ],
-          );
+          return GestureDetector(
+  onTap: () {
+    setState(() {
+      _selectedCategory = category['name'] as String;
+    });
+  },
+  child: Column(
+    children: [
+      Container(
+        width: 64,
+        height: 64,
+        decoration: BoxDecoration(
+          color: _selectedCategory == category['name']
+              ? AppColors.primary.withValues(alpha: 0.12)
+              : Colors.white,
+          borderRadius: BorderRadius.circular(18),
+          border: Border.all(
+            color: _selectedCategory == category['name']
+                ? AppColors.primary
+                : const Color(0xFFE5E7EB),
+          ),
+        ),
+        child: Icon(
+          category['icon'] as IconData,
+          color: AppColors.primary,
+          size: 30,
+        ),
+      ),
+      const SizedBox(height: 8),
+      Text(
+        category['name'] as String,
+        style: TextStyle(
+          fontSize: 12,
+          color: AppColors.textPrimary,
+          fontWeight: _selectedCategory == category['name']
+              ? FontWeight.bold
+              : FontWeight.w500,
+        ),
+      ),
+    ],
+  ),
+);
         },
       ),
     );
@@ -363,7 +395,57 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  final meals = foodProvider.foods;
+  final meals = _selectedCategory == 'All'
+    ? foodProvider.foods
+    : foodProvider.foods.where((meal) {
+        final category = meal['category']?.toString().toLowerCase();
+        final selectedCategory = _selectedCategory.toLowerCase();
+
+        if (selectedCategory == 'burgers') {
+          return category == 'burger' || category == 'burgers';
+        }
+
+        if (selectedCategory == 'chicken') {
+          return category == 'chicken';
+        }
+
+        return category == selectedCategory;
+      }).toList();
+
+      if (meals.isEmpty) {
+  return Center(
+    child: Padding(
+      padding: const EdgeInsets.all(20),
+      child: Column(
+        children: [
+          const Icon(
+            Icons.restaurant_menu_rounded,
+            size: 48,
+            color: AppColors.primary,
+          ),
+          const SizedBox(height: 12),
+          Text(
+            'No meals available in $_selectedCategory yet.',
+            textAlign: TextAlign.center,
+            style: const TextStyle(
+              fontSize: 15,
+              color: AppColors.textSecondary,
+            ),
+          ),
+          const SizedBox(height: 12),
+          TextButton(
+            onPressed: () {
+              setState(() {
+                _selectedCategory = 'All';
+              });
+            },
+            child: const Text('Show All Meals'),
+          ),
+        ],
+      ),
+    ),
+  );
+}
 
   return GridView.builder(
     shrinkWrap: true,
