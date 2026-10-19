@@ -30,6 +30,11 @@ class _HomeScreenState extends State<HomeScreen> {
       context.read<FoodProvider>().fetchFoods();
     });
   }
+  @override
+void dispose() {
+  _searchController.dispose();
+  super.dispose();
+}
 
   @override
   Widget build(BuildContext context) {
@@ -395,22 +400,33 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  final meals = _selectedCategory == 'All'
-    ? foodProvider.foods
-    : foodProvider.foods.where((meal) {
-        final category = meal['category']?.toString().toLowerCase();
-        final selectedCategory = _selectedCategory.toLowerCase();
+  final searchFilteredFoods = foodProvider.foods.where((meal) {
+  final name = meal['name']?.toString().toLowerCase() ?? '';
+  final description =
+      meal['description']?.toString().toLowerCase() ?? '';
 
-        if (selectedCategory == 'burgers') {
-          return category == 'burger' || category == 'burgers';
-        }
+  return name.contains(_searchQuery) ||
+      description.contains(_searchQuery);
+}).toList();
 
-        if (selectedCategory == 'chicken') {
-          return category == 'chicken';
-        }
+final meals = searchFilteredFoods.where((meal) {
+  if (_selectedCategory == 'All') {
+    return true;
+  }
 
-        return category == selectedCategory;
-      }).toList();
+  final category = meal['category']?.toString().toLowerCase() ?? '';
+  final selectedCategory = _selectedCategory.toLowerCase();
+
+  if (selectedCategory == 'burgers') {
+    return category == 'burger' || category == 'burgers';
+  }
+
+  if (selectedCategory == 'chicken') {
+    return category == 'chicken';
+  }
+
+  return category == selectedCategory;
+}).toList();
 
       if (meals.isEmpty) {
   return Center(
@@ -425,18 +441,24 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
           const SizedBox(height: 12),
           Text(
-            'No meals available in $_selectedCategory yet.',
-            textAlign: TextAlign.center,
-            style: const TextStyle(
-              fontSize: 15,
-              color: AppColors.textSecondary,
-            ),
-          ),
+  _searchQuery.isNotEmpty
+      ? 'No meals found for "$_searchQuery".'
+      : 'No meals available in $_selectedCategory yet.',
+  textAlign: TextAlign.center,
+  style: const TextStyle(
+    fontSize: 15,
+    color: AppColors.textSecondary,
+  ),
+),
           const SizedBox(height: 12),
           TextButton(
             onPressed: () {
+
+              _searchController.clear();
+
               setState(() {
                 _selectedCategory = 'All';
+                _searchQuery = '';
               });
             },
             child: const Text('Show All Meals'),
