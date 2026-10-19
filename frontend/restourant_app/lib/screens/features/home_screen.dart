@@ -13,6 +13,9 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  String _selectedCategory = 'All';
+
+  
   @override
   void initState(){
     super.initState();
@@ -324,10 +327,10 @@ class _HomeScreenState extends State<HomeScreen> {
 
   if (foodProvider.isLoading && foodProvider.foods.isEmpty) {
     return const Padding(
-      padding: EdgeInsets.symmetric(vertical: 30),
+      padding: EdgeInsets.all(30),
       child: Center(
         child: CircularProgressIndicator(
-          color: Color(0xFFFF6B00),
+          color: AppColors.primary,
         ),
       ),
     );
@@ -338,13 +341,7 @@ class _HomeScreenState extends State<HomeScreen> {
     return Center(
       child: Column(
         children: [
-          const Text(
-            'Could not load meals.',
-            style: TextStyle(
-              fontSize: 14,
-              color: Color(0xFF6B7280),
-            ),
-          ),
+          const Text('Unable to load meals.'),
           const SizedBox(height: 10),
           ElevatedButton(
             onPressed: () {
@@ -360,14 +357,8 @@ class _HomeScreenState extends State<HomeScreen> {
   if (foodProvider.foods.isEmpty) {
     return const Center(
       child: Padding(
-        padding: EdgeInsets.symmetric(vertical: 24),
-        child: Text(
-          'No meals available right now.',
-          style: TextStyle(
-            color: Color(0xFF6B7280),
-            fontSize: 14,
-          ),
-        ),
+        padding: EdgeInsets.all(20),
+        child: Text('No foods available right now.'),
       ),
     );
   }
@@ -389,31 +380,17 @@ class _HomeScreenState extends State<HomeScreen> {
 
       final name = meal['name']?.toString() ?? 'Unnamed food';
       final price = meal['price'];
-      final category =
-          (meal['category'] ?? '').toString().toLowerCase();
 
-      final priceText = price == null ? 'Price unavailable' : '$price ETB';
-
-      final IconData mealIcon;
-
-      if (category.contains('burger')) {
-        mealIcon = Icons.lunch_dining_rounded;
-      } else if (category.contains('pizza')) {
-        mealIcon = Icons.local_pizza_rounded;
-      } else if (category.contains('drink')) {
-        mealIcon = Icons.local_cafe_rounded;
-      } else if (category.contains('chicken')) {
-        mealIcon = Icons.set_meal_rounded;
-      } else {
-        mealIcon = Icons.restaurant_rounded;
-      }
+      final priceText = price == null
+          ? 'Price unavailable'
+          : '$price ETB';
 
       return Container(
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(18),
           border: Border.all(
-            color: const Color(0xFFEEEEEE),
+            color: Colors.grey.shade200,
           ),
         ),
         child: Padding(
@@ -421,44 +398,66 @@ class _HomeScreenState extends State<HomeScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Food image placeholder.
               Container(
-                height: 105,
-                width: double.infinity,
-                decoration: BoxDecoration(
-                  color: const Color(0xFFFFF0E5),
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Icon(
-                  mealIcon,
-                  size: 48,
-                  color: const Color(0xFFFF6B00),
-                ),
-              ),
+  height: 105,
+  width: double.infinity,
+  decoration: BoxDecoration(
+    color: AppColors.primary.withValues(alpha: 0.10),
+    borderRadius: BorderRadius.circular(12),
+  ),
+  child: ClipRRect(
+    borderRadius: BorderRadius.circular(12),
+    child: (meal['image_url'] != null &&
+            meal['image_url'].toString().isNotEmpty)
+        ? Image.network(
+            meal['image_url'].toString(),
+            width: double.infinity,
+            height: 105,
+            fit: BoxFit.cover,
+            loadingBuilder: (context, child, loadingProgress) {
+              if (loadingProgress == null) {
+                return child;
+              }
 
+              return const Center(
+                child: CircularProgressIndicator(
+                  color: AppColors.primary,
+                ),
+              );
+            },
+            errorBuilder: (context, error, stackTrace) {
+              return const Icon(
+                Icons.restaurant_rounded,
+                size: 48,
+                color: AppColors.primary,
+              );
+            },
+          )
+        : const Icon(
+            Icons.restaurant_rounded,
+            size: 48,
+            color: AppColors.primary,
+          ),
+  ),
+),
               const SizedBox(height: 10),
-
-              // Food name from the database.
               Text(
                 name,
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
                 style: const TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w600,
+                  fontSize: 15,
+                  fontWeight: FontWeight.bold,
                   color: Color(0xFF1F2937),
                 ),
               ),
-
-              const Spacer(),
-
-              // Food price from the database.
+              const SizedBox(height: 6),
               Text(
                 priceText,
                 style: const TextStyle(
                   fontSize: 14,
-                  fontWeight: FontWeight.bold,
-                  color: Color(0xFFFF6B00),
+                  fontWeight: FontWeight.w600,
+                  color: AppColors.primary,
                 ),
               ),
             ],
@@ -468,7 +467,6 @@ class _HomeScreenState extends State<HomeScreen> {
     },
   );
 }
-
   Widget _buildBottomNavigation(BuildContext context) {
   return BottomNavigationBar(
     type: BottomNavigationBarType.fixed,
