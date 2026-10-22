@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import '../../core/theme/app_colors.dart';
+import '../../providers/cart_provider.dart';
 
 class MealDetailsScreen extends StatefulWidget {
   final Map<String, dynamic> meal;
@@ -233,14 +235,19 @@ class _MealDetailsScreenState extends State<MealDetailsScreen> {
 
                     child: ElevatedButton.icon(
                       onPressed: () {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text(
-                              'Cart functionality will be added next.',
-                            ),
-                          ),
-                        );
-                      },
+  context.read<CartProvider>().addToCart(
+    meal: widget.meal,
+    quantity: _quantity,
+  );
+
+  ScaffoldMessenger.of(context).showSnackBar(
+    SnackBar(
+      content: Text(
+        '${widget.meal['name']} added to cart!',
+      ),
+    ),
+  );
+},
 
                       icon: const Icon(Icons.shopping_cart_outlined),
 
