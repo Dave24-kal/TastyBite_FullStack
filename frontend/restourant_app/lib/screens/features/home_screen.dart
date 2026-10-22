@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import '../../core/theme/app_colors.dart';
 import '../../providers/food_provider.dart';
 import 'profile_screen.dart';
+import 'meal_details_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -489,8 +490,19 @@ final meals = searchFilteredFoods.where((meal) {
           ? 'Price unavailable'
           : '$price ETB';
 
-      return Container(
-        decoration: BoxDecoration(
+      return GestureDetector(
+  onTap: () {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => MealDetailsScreen(
+          meal: meal,
+        ),
+      ),
+    );
+  },
+  child: Container(
+    decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(18),
           border: Border.all(
@@ -563,9 +575,11 @@ final meals = searchFilteredFoods.where((meal) {
                   fontWeight: FontWeight.w600,
                   color: AppColors.primary,
                 ),
+              
               ),
             ],
           ),
+        ),
         ),
       );
     },
