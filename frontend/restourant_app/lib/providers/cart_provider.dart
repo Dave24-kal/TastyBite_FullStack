@@ -15,16 +15,16 @@ class CartProvider extends ChangeNotifier {
   double get totalPrice {
     return _items.fold(
       0.0,
-      (total, item) {
-        final price = (item['price'] as num).toDouble();
-        final quantity = item['quantity'] as int;
-
-        return total + price * quantity;
-      },
+      (total, item) =>
+          total +
+          ((item['price'] as double) * (item['quantity'] as int)),
     );
   }
 
-  void addToCart(Map<String, dynamic> meal, int quantity) {
+  void addToCart({
+    required Map<String, dynamic> meal,
+    required int quantity,
+  }) {
     final mealId = meal['id'];
 
     final existingIndex = _items.indexWhere(
@@ -32,16 +32,14 @@ class CartProvider extends ChangeNotifier {
     );
 
     if (existingIndex != -1) {
-      final existingItem = _items[existingIndex];
-
-      _items[existingIndex] = {
-        ...existingItem,
-        'quantity': (existingItem['quantity'] as int) + quantity,
-      };
+      _items[existingIndex]['quantity'] =
+          (_items[existingIndex]['quantity'] as int) + quantity;
     } else {
       _items.add({
-        ...meal,
-        'price': (meal['price'] as num).toDouble(),
+        'id': mealId,
+        'name': meal['name']?.toString() ?? 'Unnamed food',
+        'price': double.tryParse(meal['price'].toString()) ?? 0.0,
+        'image_url': meal['image_url']?.toString() ?? '',
         'quantity': quantity,
       });
     }
@@ -51,21 +49,6 @@ class CartProvider extends ChangeNotifier {
 
   void removeFromCart(dynamic mealId) {
     _items.removeWhere((item) => item['id'] == mealId);
-    notifyListeners();
-  }
-
-  void updateQuantity(dynamic mealId, int quantity) {
-    if (quantity < 1) return;
-
-    final index = _items.indexWhere((item) => item['id'] == mealId);
-
-    if (index == -1) return;
-
-    _items[index] = {
-      ..._items[index],
-      'quantity': quantity,
-    };
-
     notifyListeners();
   }
 
