@@ -5,6 +5,7 @@ import '../../core/theme/app_colors.dart';
 import '../../providers/food_provider.dart';
 import 'profile_screen.dart';
 import 'meal_details_screen.dart';
+import 'cart_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -595,15 +596,22 @@ final meals = searchFilteredFoods.where((meal) {
     selectedFontSize: 12,
     unselectedFontSize: 12,
     onTap: (index) {
-      if (index == 4) {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => const ProfileScreen(),
-          ),
-        );
-      }
-    },
+  if (index == 2) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => const CartScreen(),
+      ),
+    );
+  } else if (index == 4) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => const ProfileScreen(),
+      ),
+    );
+  }
+},
     items: const [
       BottomNavigationBarItem(
         icon: Icon(Icons.home_rounded),
