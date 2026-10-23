@@ -86,7 +86,49 @@ class CartScreen extends StatelessWidget {
                                       ),
                                     ),
                                     const SizedBox(height: 4),
-                                    Text('Quantity: $quantity'),
+                                    Row(
+  children: [
+    const Text('Quantity: '),
+    IconButton(
+      onPressed: quantity > 1
+          ? () {
+              cartProvider.updateQuantity(
+                mealId: item['id'],
+                quantity: quantity - 1,
+              );
+            }
+          : null,
+      icon: const Icon(Icons.remove_circle_outline),
+      iconSize: 22,
+      padding: EdgeInsets.zero,
+      constraints: const BoxConstraints(
+        minWidth: 32,
+        minHeight: 32,
+      ),
+    ),
+    Text(
+      '$quantity',
+      style: const TextStyle(
+        fontWeight: FontWeight.bold,
+      ),
+    ),
+    IconButton(
+      onPressed: () {
+        cartProvider.updateQuantity(
+          mealId: item['id'],
+          quantity: quantity + 1,
+        );
+      },
+      icon: const Icon(Icons.add_circle_outline),
+      iconSize: 22,
+      padding: EdgeInsets.zero,
+      constraints: const BoxConstraints(
+        minWidth: 32,
+        minHeight: 32,
+      ),
+    ),
+  ],
+),
                                     const SizedBox(height: 4),
                                     Text(
                                       'Subtotal: ETB '

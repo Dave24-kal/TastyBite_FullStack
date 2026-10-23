@@ -6,6 +6,7 @@ import '../../providers/food_provider.dart';
 import 'profile_screen.dart';
 import 'meal_details_screen.dart';
 import 'cart_screen.dart';
+import '../../providers/cart_provider.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -612,7 +613,7 @@ final meals = searchFilteredFoods.where((meal) {
     );
   }
 },
-    items: const [
+    items: [
       BottomNavigationBarItem(
         icon: Icon(Icons.home_rounded),
         label: 'Home',
@@ -622,9 +623,19 @@ final meals = searchFilteredFoods.where((meal) {
         label: 'Explore',
       ),
       BottomNavigationBarItem(
-        icon: Icon(Icons.shopping_bag_outlined),
+        icon: Consumer<CartProvider>(
+          builder: (context, cartProvider, child) {
+            final count = cartProvider.itemCount;
+
+            return Badge(
+              isLabelVisible: count > 0,
+              label: Text('$count'),
+              child: const Icon(Icons.shopping_bag_outlined),
+            );
+          },
+        ),
         label: 'Cart',
-      ),
+   ),
       BottomNavigationBarItem(
         icon: Icon(Icons.favorite_border_rounded),
         label: 'Favorites',
