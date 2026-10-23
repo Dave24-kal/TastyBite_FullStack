@@ -46,6 +46,26 @@ class CartProvider extends ChangeNotifier {
 
     notifyListeners();
   }
+void updateQuantity({
+  required dynamic mealId,
+  required int quantity,
+}) {
+  if (quantity < 1) {
+    return;
+  }
+
+  final index = _items.indexWhere(
+    (item) => item['id'] == mealId,
+  );
+
+  if (index == -1) {
+    return;
+  }
+
+  _items[index]['quantity'] = quantity;
+
+  notifyListeners();
+}
 
   void removeFromCart(dynamic mealId) {
     _items.removeWhere((item) => item['id'] == mealId);
