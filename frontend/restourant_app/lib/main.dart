@@ -4,26 +4,27 @@ import 'package:provider/provider.dart';
 import 'core/theme/app_theme.dart';
 import 'providers/auth_provider.dart';
 import 'providers/food_provider.dart';
-import 'screens/Splash/splash_screen.dart';
 import 'providers/cart_provider.dart';
+import 'screens/Splash/splash_screen.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  runApp(MultiProvider(
-    providers: [
-      ChangeNotifierProvider(
-        create: (_) => AuthProvider(),
-      ),
-      ChangeNotifierProvider(
-        create: (_) => FoodProvider(),
-      ),
-      ChangeNotifierProvider(
-        create: (_) => CartProvider(),
-      ),
-    ],
-    child: const RestourantApp(),
-  ),
+  runApp(
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(
+          create: (_) => AuthProvider(),
+        ),
+        ChangeNotifierProvider(
+          create: (_) => FoodProvider(),
+        ),
+        ChangeNotifierProvider(
+          create: (_) => CartProvider()..loadCart(),
+        ),
+      ],
+      child: const RestourantApp(),
+    ),
   );
 }
 
@@ -33,7 +34,7 @@ class RestourantApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: "TestyBite",
+      title: 'TastyBite',
       debugShowCheckedModeBanner: false,
       theme: AppTheme.lightTheme,
       home: const SplashScreen(),
