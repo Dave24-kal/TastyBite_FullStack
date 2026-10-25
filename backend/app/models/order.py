@@ -13,8 +13,7 @@ from sqlalchemy import (
 )
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from app.models.user import Base, User
-from app.models.food import Food
+from app.models.user import Base
 
 
 class Order(Base):
@@ -66,9 +65,12 @@ class Order(Base):
         server_default=func.now(),
     )
 
-    user: Mapped["User"] = relationship()
+    user: Mapped["User"] = relationship(
+        "User",
+    )
 
     items: Mapped[list["OrderItem"]] = relationship(
+        "OrderItem",
         back_populates="order",
         cascade="all, delete-orphan",
     )
@@ -107,7 +109,10 @@ class OrderItem(Base):
     )
 
     order: Mapped["Order"] = relationship(
+        "Order",
         back_populates="items",
     )
 
-    food: Mapped["Food"] = relationship()
+    food: Mapped["Food"] = relationship(
+        "Food",
+    )
