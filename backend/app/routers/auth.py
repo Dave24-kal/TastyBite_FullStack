@@ -79,8 +79,8 @@ def register(
     return new_user
 
 
-@router.post("/login", response_model=UserResponse)
 @router.post("/login", response_model=TokenResponse)
+
 def login(
     user_data: UserLogin,
     db: Session = Depends(get_db)
