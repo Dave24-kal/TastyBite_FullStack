@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../providers/cart_provider.dart';
+import '../../core/services/order_service.dart';
 
 class CheckoutScreen extends StatefulWidget {
   const CheckoutScreen({super.key});
@@ -12,6 +13,8 @@ class CheckoutScreen extends StatefulWidget {
 
 class _CheckoutScreenState extends State<CheckoutScreen> {
   final _formKey = GlobalKey<FormState>();
+  final OrderService _orderService = OrderService();
+  bool _isSubmitting = false;
 
   final _nameController = TextEditingController();
   final _phoneController = TextEditingController();
@@ -25,19 +28,93 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
     super.dispose();
   }
 
-  void _placeOrder() {
-    if (!_formKey.currentState!.validate()) {
-      return;
-    }
+  Future<void> _placeOrder() async {
+  if (!_formKey.currentState!.validate()) {
+    return;
+  }
+
+  if (_isSubmitting) {
+    return;
+  }
+
+  setState(() {
+    _isSubmitting = true;
+  });
+
+  try {
+    final cartProvider = context.read<CartProvider>();
+
+    final order = await _orderService.createOrder(
+      customerName: _nameController.text,
+      customerPhone: _phoneController.text,
+      deliveryAddress: _addressController.text,
+      items: cartProvider.items,
+    );
+
+    if (!mounted) return;
+
+    // Clear the cart only after the backend confirms success.
+    cartProvider.clearCart();
+
+    final orderId = order['id'];
+    final totalAmount = order['total_amount'];
+
+    await showDialog<void>(
+      context: context,
+      barrierDismissible: false,
+      builder: (dialogContext) {
+        return AlertDialog(
+          icon: const Icon(
+            Icons.check_circle_outline,
+            color: Colors.green,
+            size: 56,
+          ),
+          title: const Text('Order Placed Successfully!'),
+          content: Text(
+            'Your order #$orderId has been received.\n\n'
+            'Total: ETB $totalAmount',
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(dialogContext).pop();
+              },
+              child: const Text('Continue'),
+            ),
+          ],
+        );
+      },
+    );
+  } on OrderException catch (error) {
+    if (!mounted) return;
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(error.message),
+        backgroundColor: Colors.red,
+      ),
+    );
+  } catch (error) {
+    if (!mounted) return;
 
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
         content: Text(
-          'Checkout form validated! Order submission comes next.',
+          'Something went wrong while placing your order.',
         ),
+        backgroundColor: Colors.red,
       ),
     );
+
+    debugPrint('Checkout error: $error');
+  } finally {
+    if (mounted) {
+      setState(() {
+        _isSubmitting = false;
+      });
+    }
   }
+}
 
   @override
   Widget build(BuildContext context) {
@@ -196,17 +273,32 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                       const SizedBox(height: 24),
 
                       SizedBox(
-                        width: double.infinity,
-                        child: ElevatedButton(
-                          onPressed: _placeOrder,
-                          style: ElevatedButton.styleFrom(
-                            padding: const EdgeInsets.symmetric(
-                              vertical: 16,
-                            ),
-                          ),
-                          child: const Text('Place Order'),
-                        ),
-                      ),
+  width: double.infinity,
+  child: ElevatedButton(
+    onPressed: _isSubmitting ? null : _placeOrder,
+    style: ElevatedButton.styleFrom(
+      padding: const EdgeInsets.symmetric(
+        vertical: 16,
+      ),
+    ),
+    child: _isSubmitting
+        ? const Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              SizedBox(
+                width: 20,
+                height: 20,
+                child: CircularProgressIndicator(
+                  strokeWidth: 2,
+                ),
+              ),
+              SizedBox(width: 12),
+              Text('Placing Order...'),
+            ],
+          )
+        : const Text('Place Order'),
+  ),
+),
                     ],
                   ),
                 ),
