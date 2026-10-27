@@ -7,6 +7,7 @@ import 'profile_screen.dart';
 import 'meal_details_screen.dart';
 import 'cart_screen.dart';
 import '../../providers/cart_provider.dart';
+import 'order_history_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -115,22 +116,60 @@ void dispose() {
           ),
         ),
 
-        Container(
-          width: 48,
-          height: 48,
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(16),
-            border: Border.all(
-              color: const Color(0xFFE5E7EB),
-            ),
-          ),
-          child: Icon(
-            Icons.notifications_none_rounded,
-            color: AppColors.textPrimary,
-            size: 26,
-          ),
+        Row(
+  children: [
+    // My Orders button
+    Container(
+      width: 48,
+      height: 48,
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: const Color(0xFFE5E7EB),
         ),
+      ),
+      child: IconButton(
+        tooltip: 'My Orders',
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) =>
+                  const OrderHistoryScreen(),
+            ),
+          );
+        },
+        icon: Icon(
+          Icons.receipt_long_rounded,
+          color: AppColors.textPrimary,
+          size: 24,
+        ),
+      ),
+    ),
+
+    const SizedBox(width: 8),
+
+    // Existing notification icon
+    Container(
+      width: 48,
+      height: 48,
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: const Color(0xFFE5E7EB),
+        ),
+      ),
+      child: Icon(
+        Icons.notifications_none_rounded,
+        color: AppColors.textPrimary,
+        size: 26,
+      ),
+    ),
+  ],
+),
+        
       ],
     );
   }

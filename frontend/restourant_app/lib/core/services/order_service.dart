@@ -126,4 +126,75 @@ class OrderService {
       );
     }
   }
+Future<List<Map<String, dynamic>>> getMyOrders() async {
+  final accessToken = await _authService.getAccessToken();
+
+  if (accessToken == null || accessToken.isEmpty) {
+    throw OrderException(
+      'Please sign in to view your orders.',
+    );
+  }
+
+  final url = Uri.parse(
+    '${ApiConfig.baseUrl}/orders/my-orders',
+  );
+
+  try {
+    final response = await http
+        .get(
+          url,
+          headers: {
+            'Authorization': 'Bearer $accessToken',
+            'Accept': 'application/json',
+          },
+        )
+        .timeout(const Duration(seconds: 15));
+
+    if (response.statusCode == 200) {
+      final dynamic responseData = jsonDecode(response.body);
+
+      if (responseData is List) {
+        return responseData
+            .map(
+              (item) => Map<String, dynamic>.from(item as Map),
+            )
+            .toList();
+      }
+
+      throw OrderException(
+        'The server returned an unexpected response.',
+      );
+    }
+
+    if (response.statusCode == 401) {
+      throw OrderException(
+        'Your session has expired. Please sign in again.',
+      );
+    }
+
+    final dynamic responseData = jsonDecode(response.body);
+
+    if (responseData is Map<String, dynamic> &&
+        responseData['detail'] is String) {
+      throw OrderException(responseData['detail'] as String);
+    }
+
+    throw OrderException(
+      'Could not load your orders. '
+      'Server status: ${response.statusCode}.',
+    );
+  } on OrderException {
+    rethrow;
+  } on TimeoutException {
+    throw OrderException(
+      'The request timed out. Please try again.',
+    );
+  } catch (error) {
+    debugPrint('Load orders failed: $error');
+
+    throw OrderException(
+      'Could not connect to the server. Please check your connection.',
+    );
+  }
+}
 }

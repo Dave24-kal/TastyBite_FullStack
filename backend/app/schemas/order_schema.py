@@ -37,11 +37,12 @@ class OrderCreate(BaseModel):
 class OrderItemResponse(BaseModel):
     id: int
     food_id: int
+    food_name: str
+    food_image_url: str | None
     quantity: int
     unit_price: Decimal
 
     model_config = ConfigDict(from_attributes=True)
-
 
 class OrderResponse(BaseModel):
     id: int
