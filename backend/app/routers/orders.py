@@ -100,3 +100,21 @@ def create_order(
     except Exception:
         db.rollback()
         raise
+
+
+@router.get(
+    "/my-orders",
+    response_model=list[OrderResponse],
+)
+def get_my_orders(
+    db: Annotated[Session, Depends(get_db)],
+    current_user: Annotated[User, Depends(get_current_user)],
+):
+    orders = db.scalars(
+        select(Order)
+        .options(selectinload(Order.items))
+        .where(Order.user_id == current_user.id)
+        .order_by(Order.created_at.desc())
+    ).all()
+
+    return orders
