@@ -1,8 +1,7 @@
 from datetime import datetime
 from decimal import Decimal
 
-from pydantic import BaseModel, ConfigDict, Field, field_validator
-
+from pydantic import AliasPath, BaseModel, ConfigDict, Field, field_validator
 
 class OrderItemCreate(BaseModel):
     food_id: int = Field(gt=0)
@@ -37,8 +36,14 @@ class OrderCreate(BaseModel):
 class OrderItemResponse(BaseModel):
     id: int
     food_id: int
-    food_name: str
-    food_image_url: str | None
+
+    food_name: str = Field(
+        validation_alias=AliasPath("food", "name")
+    )
+    food_image_url: str | None = Field(
+        validation_alias=AliasPath("food", "image_url")
+    )
+
     quantity: int
     unit_price: Decimal
 

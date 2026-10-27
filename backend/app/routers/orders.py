@@ -84,11 +84,12 @@ def create_order(
 
         # Load the order items so they can be returned in the response.
         saved_order = db.scalar(
-            select(Order)
-            .options(selectinload(Order.items))
-            .where(Order.id == new_order.id)
-        )
-
+    select(Order)
+    .options(
+        selectinload(Order.items).selectinload(OrderItem.food)
+    )
+    .where(Order.id == new_order.id)
+)
         if saved_order is None:
             raise HTTPException(
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
@@ -111,10 +112,12 @@ def get_my_orders(
     current_user: Annotated[User, Depends(get_current_user)],
 ):
     orders = db.scalars(
-        select(Order)
-        .options(selectinload(Order.items))
-        .where(Order.user_id == current_user.id)
-        .order_by(Order.created_at.desc())
-    ).all()
+    select(Order)
+    .options(
+        selectinload(Order.items).selectinload(OrderItem.food)
+    )
+    .where(Order.user_id == current_user.id)
+    .order_by(Order.created_at.desc())
+).all()
 
     return orders
