@@ -31,7 +31,13 @@ class User(Base):
         unique=True,
         nullable=False
 )
-
+    role: Mapped[str] = mapped_column(
+        String(20),
+        nullable=False,
+        default="customer",
+        server_default="customer"
+)    
+       
     password_hash: Mapped[str] = mapped_column(
         String(255),
         nullable=False
