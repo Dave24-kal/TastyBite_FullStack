@@ -42,7 +42,26 @@ def create_food(
 
     return new_food
 
+@router.delete("/{food_id}", status_code=status.HTTP_204_NO_CONTENT)
+
+def delete_food(
+    food_id: int,
+    db: Session = Depends(get_db),
+    admin: User = Depends(get_current_admin),
+):
+    food = db.get(Food, food_id)
+
+    if food is None:
+        raise HTTPException(
+            status_code=404,
+            detail="Food not found",
+        )
+
+    db.delete(food)
+    db.commit()
+    
 @router.patch("/{food_id}", response_model=FoodResponse)
+
 def update_food(
     food_id: int,
     food_data: FoodUpdate,
