@@ -12,6 +12,19 @@ class FoodCreate(BaseModel):
     image_url: str | None = None
     is_available: bool = True
 
+class FoodUpdate(BaseModel):
+    name: str | None = Field(default=None, min_length=2, max_length=150)
+    description: str | None = Field(default=None, min_length=5)
+    price: Decimal | None = Field(
+        default=None,
+        gt=0,
+        max_digits=10,
+        decimal_places=2,
+    )
+    category: str | None = Field(default=None, min_length=2, max_length=100)
+    image_url: str | None = None
+    is_available: bool | None = None
+
 class FoodResponse(BaseModel):
     id: int
     name: str
