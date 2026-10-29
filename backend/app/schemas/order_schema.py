@@ -1,4 +1,5 @@
 from datetime import datetime
+from typing import Literal
 from decimal import Decimal
 
 from pydantic import AliasPath, BaseModel, ConfigDict, Field, field_validator
@@ -61,3 +62,13 @@ class OrderResponse(BaseModel):
     items: list[OrderItemResponse]
 
     model_config = ConfigDict(from_attributes=True)
+
+class OrderStatusUpdate(BaseModel):
+    status: Literal[
+        "pending",
+        "confirmed",
+        "preparing",
+        "ready",
+        "delivered",
+        "cancelled",
+    ]
