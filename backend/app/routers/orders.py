@@ -16,10 +16,7 @@ from app.schemas.order_schema import (
     OrderStatusUpdate,
 )
 
-router = APIRouter(
-    prefix="/orders",
-    tags=["Orders"],
-)
+router = APIRouter(prefix="/orders", tags=["Orders"])
 
 
 @router.post(
@@ -35,40 +32,31 @@ def create_order(
     total_amount = Decimal("0.00")
     order_items = []
 
-    # Check every requested food before saving the order.
-    for item in order_data.items:
+    for item_data in order_data.items:
         food = db.scalar(
-            select(Food).where(Food.id == item.food_id)
+            select(Food).where(Food.id == item_data.food_id)
         )
 
-        if food is None:
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail=f"Food with ID {item.food_id} was not found",
-            )
-
-        if not food.is_available:
+        if food is None or not food.is_available:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
-                detail=f"{food.name} is currently unavailable",
+                detail=f"Food item {item_data.food_id} is unavailable",
             )
 
-        # Always use the price stored in PostgreSQL.
-        unit_price = food.price
-        subtotal = unit_price * item.quantity
+        unit_price = Decimal(str(food.price))
+        quantity = item_data.quantity
 
-        total_amount += subtotal
+        total_amount += unit_price * quantity
 
         order_items.append(
             OrderItem(
                 food_id=food.id,
-                quantity=item.quantity,
+                quantity=quantity,
                 unit_price=unit_price,
             )
         )
 
-    # Create the main order record.
-    new_order = Order(
+    order = Order(
         user_id=current_user.id,
         customer_name=order_data.customer_name,
         customer_phone=order_data.customer_phone,
@@ -79,27 +67,22 @@ def create_order(
     )
 
     try:
-        db.add(new_order)
+        db.add(order)
         db.commit()
+        db.refresh(order)
 
-        # Retrieve the saved order ID and other database values.
-        db.refresh(new_order)
+        # Load the food relationships required by OrderResponse.
+        db.refresh(order, attribute_names=["items"])
 
-        # Load the order items so they can be returned in the response.
-        saved_order = db.scalar(
-    select(Order)
-    .options(
-        selectinload(Order.items).selectinload(OrderItem.food)
-    )
-    .where(Order.id == new_order.id)
-)
-        if saved_order is None:
-            raise HTTPException(
-                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                detail="Order was saved but could not be retrieved",
+        order = db.scalar(
+            select(Order)
+            .options(
+                selectinload(Order.items).selectinload(OrderItem.food)
             )
+            .where(Order.id == order.id)
+        )
 
-        return saved_order
+        return order
 
     except Exception:
         db.rollback()
@@ -115,15 +98,16 @@ def get_my_orders(
     current_user: Annotated[User, Depends(get_current_user)],
 ):
     orders = db.scalars(
-    select(Order)
-    .options(
-        selectinload(Order.items).selectinload(OrderItem.food)
-    )
-    .where(Order.user_id == current_user.id)
-    .order_by(Order.created_at.desc())
-).all()
+        select(Order)
+        .options(
+            selectinload(Order.items).selectinload(OrderItem.food)
+        )
+        .where(Order.user_id == current_user.id)
+        .order_by(Order.created_at.desc())
+    ).all()
 
     return orders
+
 
 @router.get(
     "/",
@@ -154,6 +138,7 @@ def update_order_status(
     db: Annotated[Session, Depends(get_db)],
     current_admin: Annotated[User, Depends(get_current_admin)],
 ):
+    # Find the order and load its items and related food.
     order = db.scalar(
         select(Order)
         .options(
@@ -168,9 +153,56 @@ def update_order_status(
             detail="Order not found",
         )
 
-    order.status = status_data.status
+    # Define which status changes are allowed.
+    # IMPORTANT: This dictionary must be outside the "if order is None" block.
+    allowed_transitions = {
+        "pending": {"confirmed", "cancelled"},
+        "confirmed": {"preparing", "cancelled"},
+        "preparing": {"ready", "cancelled"},
+        "ready": {"delivered"},
+        "delivered": set(),
+        "cancelled": set(),
+    }
 
-    db.commit()
-    db.refresh(order)
+    new_status = status_data.status
 
-    return order
+    # Prevent updating an order to its current status.
+    if new_status == order.status:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"Order is already {order.status}",
+        )
+
+    # Check whether the requested transition is allowed.
+    allowed_next_statuses = allowed_transitions.get(order.status, set())
+
+    if new_status not in allowed_next_statuses:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=(
+                f"Cannot change order status from "
+                f"'{order.status}' to '{new_status}'"
+            ),
+        )
+
+    # Save the new status to the database.
+    order.status = new_status
+
+    try:
+        db.commit()
+        db.refresh(order)
+
+        # Reload relationships for the response.
+        order = db.scalar(
+            select(Order)
+            .options(
+                selectinload(Order.items).selectinload(OrderItem.food)
+            )
+            .where(Order.id == order_id)
+        )
+
+        return order
+
+    except Exception:
+        db.rollback()
+        raise
