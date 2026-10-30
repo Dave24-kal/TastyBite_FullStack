@@ -1,0 +1,21 @@
+#root {
+  min-height: 100vh;
+}
+
+div {
+  text-align: center;
+}
+
+h1 {
+  color: #e85d04;
+  font-size: 40px;
+}
+
+h2 {
+  color: #333333;
+}
+
+p {
+  color: #666666;
+  font-size: 18px;
+}
