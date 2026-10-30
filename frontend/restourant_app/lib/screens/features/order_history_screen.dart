@@ -269,7 +269,7 @@ class _OrderHistoryScreenState extends State<OrderHistoryScreen> {
                           children: [
                             Expanded(
                               child: Text(
-                                'Food #${item['food_id'] ?? '?'}'
+                                '${item['food_name'] ?? 'Unknown food'}'
                                 ' × ${item['quantity'] ?? 0}',
                               ),
                             ),
