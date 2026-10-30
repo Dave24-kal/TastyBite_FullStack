@@ -184,3 +184,40 @@
     grid-template-columns: 1fr;
   }
 }
+.recent-orders {
+  background: white;
+  margin-top: 30px;
+  padding: 25px;
+  border-radius: 10px;
+  overflow-x: auto;
+}
+
+.recent-orders h2 {
+  margin-bottom: 20px;
+}
+
+.recent-orders table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+}
+
+.recent-orders th,
+.recent-orders td {
+  padding: 15px;
+  border-bottom: 1px solid #eeeeee;
+  font-size: 14px;
+}
+
+.recent-orders th {
+  color: #777777;
+  background: #f9f9f9;
+}
+
+.recent-orders td {
+  color: #444444;
+}
+.nav-link.active {
+  background: #e85d04;
+  color: white;
+}

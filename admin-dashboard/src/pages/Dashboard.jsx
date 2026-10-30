@@ -1,3 +1,5 @@
+import RecentOrders from '../components/RecentOrders'
+
 function Dashboard() {
   return (
     <main className="dashboard-content">
@@ -12,7 +14,9 @@ function Dashboard() {
           <span>Total Orders</span>
           <h2>120</h2>
           <p>All customer orders</p>
+
         </div>
+        <RecentOrders />
 
         <div className="stat-card">
           <span>Total Customers</span>

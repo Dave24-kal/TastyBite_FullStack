@@ -1,3 +1,5 @@
+import { NavLink } from 'react-router-dom'
+
 function Sidebar() {
   return (
     <aside className="sidebar">
@@ -7,30 +9,24 @@ function Sidebar() {
       </div>
 
       <nav className="sidebar-nav">
-        <p className="nav-heading">MENU</p>
+  <p className="nav-heading">MENU</p>
 
-        <a href="#" className="nav-link active">
-          Overview
-        </a>
+  <NavLink to="/" end className="nav-link">
+    Overview
+  </NavLink>
 
-        <a href="#" className="nav-link">
-          Food Management
-        </a>
+  <NavLink to="/foods" className="nav-link">
+    Food Management
+  </NavLink>
 
-        <a href="#" className="nav-link">
-          Orders
-        </a>
+  <a href="#" className="nav-link">Orders</a>
 
-        <a href="#" className="nav-link">
-          Customers
-        </a>
+  <a href="#" className="nav-link">Customers</a>
 
-        <p className="nav-heading">OTHER</p>
+  <p className="nav-heading">OTHER</p>
 
-        <a href="#" className="nav-link">
-          Settings
-        </a>
-      </nav>
+  <a href="#" className="nav-link">Settings</a>
+</nav>
     </aside>
   )
 }
