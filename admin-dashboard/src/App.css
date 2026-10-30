@@ -221,3 +221,56 @@
   background: #e85d04;
   color: white;
 }
+.food-form {
+  background: white;
+  padding: 25px;
+  border-radius: 10px;
+  max-width: 700px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 20px;
+}
+
+.form-group label {
+  margin-bottom: 8px;
+  font-weight: bold;
+  font-size: 14px;
+}
+
+.form-group input,
+.form-group textarea {
+  padding: 12px;
+  border: 1px solid #dddddd;
+  border-radius: 6px;
+  outline: none;
+}
+
+.form-group input:focus,
+.form-group textarea:focus {
+  border-color: #e85d04;
+}
+
+.form-group textarea {
+  min-height: 100px;
+  resize: vertical;
+}
+
+.submit-button,
+.add-food-button {
+  background: #e85d04;
+  color: white;
+  border: none;
+  padding: 12px 20px;
+  border-radius: 6px;
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-block;
+}
+
+.submit-button:hover,
+.add-food-button:hover {
+  background: #c94e00;
+}

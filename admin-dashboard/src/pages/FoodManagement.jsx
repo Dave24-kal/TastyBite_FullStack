@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { getFoods } from '../services/api'
+import { Link } from 'react-router-dom'
 
 function FoodManagement() {
   const [foods, setFoods] = useState([])
@@ -35,6 +36,9 @@ function FoodManagement() {
         <h2>Food Management</h2>
         <p>Manage the foods available in your restaurant.</p>
       </div>
+      <Link to="/foods/add" className="add-food-button">
+  + Add New Food
+</Link>
 
       <div className="recent-orders">
         <h2>Available Foods ({foods.length})</h2>

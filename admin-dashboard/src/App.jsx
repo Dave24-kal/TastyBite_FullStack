@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
 
 import './App.css'
+import AddFood from './pages/AddFood'
 
 import Sidebar from './components/layout/Sidebar'
 import Header from './components/layout/Header'
@@ -19,6 +20,7 @@ function App() {
           <Routes>
             <Route path="/" element={<Dashboard />} />
             <Route path="/foods" element={<FoodManagement />} />
+            <Route path="/foods/add" element={<AddFood />} />
           </Routes>
         </div>
       </div>
