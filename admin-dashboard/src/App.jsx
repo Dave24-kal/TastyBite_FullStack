@@ -1,11 +1,21 @@
+import './App.css'
+import Sidebar from './components/layout/Sidebar'
+import Header from './components/layout/Header'
+import Dashboard from './pages/Dashboard'
 function App() {
   return (
-    <div>
-      <h1>Welcome to TastyBite</h1>
+    <div className="app-layout">
 
-      <h2>Admin Dashboard</h2>
+      <Sidebar />
 
-      <p>Manage your restaurant from one place.</p>
+      <div className="main-area">
+
+        <Header />
+
+        <Dashboard />
+
+      </div>
+
     </div>
   )
 }
