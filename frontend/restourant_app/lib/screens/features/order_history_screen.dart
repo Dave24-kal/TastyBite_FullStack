@@ -90,19 +90,23 @@ class _OrderHistoryScreenState extends State<OrderHistoryScreen> {
   }
 
   Color _statusColor(String status) {
-    switch (status.toLowerCase()) {
-      case 'delivered':
-        return Colors.green;
-      case 'cancelled':
-        return Colors.red;
-      case 'confirmed':
-        return Colors.blue;
-      case 'pending':
-        return Colors.orange;
-      default:
-        return Colors.grey;
-    }
+  switch (status.toLowerCase()) {
+    case 'delivered':
+      return Colors.green;
+    case 'cancelled':
+      return Colors.red;
+    case 'confirmed':
+      return Colors.blue;
+    case 'preparing':
+      return Colors.deepPurple;
+    case 'ready':
+      return Colors.teal;
+    case 'pending':
+      return Colors.orange;
+    default:
+      return Colors.grey;
   }
+}
 
   Widget _buildEmptyState() {
     return ListView(
