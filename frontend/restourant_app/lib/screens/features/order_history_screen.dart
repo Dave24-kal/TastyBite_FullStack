@@ -179,6 +179,13 @@ class _OrderHistoryScreenState extends State<OrderHistoryScreen> {
     final items = order['items'] is List
         ? order['items'] as List
         : <dynamic>[];
+    final firstFoodName = items.isNotEmpty && items.first is Map
+        ? (items.first['food_name'] ?? 'Unknown food').toString()
+        : 'Order #$orderId';
+
+    final orderTitle = items.length > 1
+        ? '$firstFoodName + ${items.length - 1} more'
+        : firstFoodName; 
 
     return Card(
       margin: const EdgeInsets.only(
@@ -196,11 +203,11 @@ class _OrderHistoryScreenState extends State<OrderHistoryScreen> {
           ),
         ),
         title: Text(
-          'Order #$orderId',
-          style: const TextStyle(
+            orderTitle,
+            style: const TextStyle(
             fontWeight: FontWeight.bold,
+            ),
           ),
-        ),
         subtitle: Padding(
           padding: const EdgeInsets.only(top: 6),
           child: Column(
