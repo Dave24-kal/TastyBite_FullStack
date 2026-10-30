@@ -45,7 +45,11 @@ function RecentOrders() {
               <td>{order.customer}</td>
               <td>{order.date}</td>
               <td>{order.amount}</td>
-              <td>{order.status}</td>
+              <td>
+                <span className={`status-badge status-${order.status.toLowerCase()}`}>
+                  {order.status}
+                </span>
+              </td>
             </tr>
           ))}
         </tbody>
