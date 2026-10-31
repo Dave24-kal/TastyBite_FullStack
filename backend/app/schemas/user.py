@@ -43,6 +43,7 @@ class UserResponse(BaseModel):
     full_name: str
     phone: str
     email: EmailStr
+    role: str
 
 class UserLogin(BaseModel):
     email: EmailStr
