@@ -51,6 +51,7 @@ function FoodManagement() {
               <th>Category</th>
               <th>Price</th>
               <th>Availability</th>
+              <th>Actions</th>
             </tr>
           </thead>
 
@@ -64,6 +65,14 @@ function FoodManagement() {
                 <td>
                   {food.is_available ? 'Available' : 'Unavailable'}
                 </td>
+                <td>
+  <Link
+    to={`/foods/${food.id}/edit`}
+    className="edit-button"
+  >
+    Edit
+  </Link>
+</td>
               </tr>
             ))}
           </tbody>

@@ -1,6 +1,10 @@
 import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
+import { createFood } from '../services/api'
 
 function AddFood() {
+  const navigate = useNavigate()
+
   const [food, setFood] = useState({
     name: '',
     description: '',
@@ -8,6 +12,9 @@ function AddFood() {
     category: '',
     image_url: '',
   })
+
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState('')
 
   function handleChange(event) {
     const { name, value } = event.target
@@ -18,12 +25,28 @@ function AddFood() {
     })
   }
 
-  function handleSubmit(event) {
+  async function handleSubmit(event) {
     event.preventDefault()
 
-    console.log('Food information:', food)
+    setError('')
+    setLoading(true)
 
-    alert('Food form submitted! API connection comes next.')
+    try {
+      const createdFood = await createFood({
+        ...food,
+        name: food.name.trim(),
+        description: food.description.trim(),
+        category: food.category.trim(),
+      })
+
+      alert(`${createdFood.name} was added successfully!`)
+
+      navigate('/foods')
+    } catch (err) {
+      setError(err.message)
+    } finally {
+      setLoading(false)
+    }
   }
 
   return (
@@ -34,6 +57,12 @@ function AddFood() {
       </div>
 
       <form className="food-form" onSubmit={handleSubmit}>
+        {error && (
+          <div className="login-error">
+            {error}
+          </div>
+        )}
+
         <div className="form-group">
           <label>Food Name</label>
           <input
@@ -42,6 +71,7 @@ function AddFood() {
             value={food.name}
             onChange={handleChange}
             placeholder="Enter food name"
+            minLength="2"
             required
           />
         </div>
@@ -53,6 +83,7 @@ function AddFood() {
             value={food.description}
             onChange={handleChange}
             placeholder="Enter food description"
+            minLength="5"
             required
           />
         </div>
@@ -79,6 +110,7 @@ function AddFood() {
             value={food.category}
             onChange={handleChange}
             placeholder="Example: Fast Food"
+            minLength="2"
             required
           />
         </div>
@@ -94,8 +126,12 @@ function AddFood() {
           />
         </div>
 
-        <button type="submit" className="submit-button">
-          Add Food
+        <button
+          type="submit"
+          className="submit-button"
+          disabled={loading}
+        >
+          {loading ? 'Saving Food...' : 'Add Food'}
         </button>
       </form>
     </main>
