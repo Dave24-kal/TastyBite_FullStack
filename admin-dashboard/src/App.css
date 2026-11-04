@@ -466,3 +466,36 @@
   background: var(--primary);
   color: var(--white);
 }
+
+.delete-button {
+  display: inline-block;
+  background: #FEE2E2;
+  color: #DC2626;
+  border: none;
+  padding: 7px 14px;
+  border-radius: 6px;
+  margin-left: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.delete-button:hover {
+  background: #DC2626;
+  color: white;
+}
+.food-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.food-actions .delete-button {
+  margin-left: 0;
+  white-space: nowrap;
+}
+
+.food-actions .edit-button {
+  white-space: nowrap;
+}

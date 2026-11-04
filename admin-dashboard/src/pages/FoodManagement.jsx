@@ -1,11 +1,32 @@
 import { useEffect, useState } from 'react'
-import { getFoods } from '../services/api'
+import { getFoods, deleteFood } from '../services/api'
 import { Link } from 'react-router-dom'
 
 function FoodManagement() {
   const [foods, setFoods] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
+
+
+  async function handleDelete(food) {
+  const confirmed = window.confirm(
+    `Are you sure you want to delete "${food.name}"?`
+  )
+
+  if (!confirmed) return
+
+  try {
+    await deleteFood(food.id)
+
+    setFoods((previousFoods) =>
+      previousFoods.filter((item) => item.id !== food.id)
+    )
+
+    alert('Food deleted successfully!')
+  } catch (err) {
+    alert(err.message)
+  }
+}
 
   useEffect(() => {
     async function loadFoods() {
@@ -65,13 +86,17 @@ function FoodManagement() {
                 <td>
                   {food.is_available ? 'Available' : 'Unavailable'}
                 </td>
-                <td>
-  <Link
-    to={`/foods/${food.id}/edit`}
-    className="edit-button"
-  >
+                <td className="food-actions">
+  <Link to={`/foods/${food.id}/edit`} className="edit-button">
     Edit
   </Link>
+
+  <button
+    className="delete-button"
+    onClick={() => handleDelete(food)}
+  >
+    Delete
+  </button>
 </td>
               </tr>
             ))}

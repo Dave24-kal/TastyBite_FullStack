@@ -101,3 +101,26 @@ export async function updateFood(foodId, food) {
 
   return data
 }
+
+
+export async function deleteFood(foodId) {
+  const token = sessionStorage.getItem('admin_token')
+
+  if (!token) {
+    throw new Error('Please sign in as an administrator.')
+  }
+
+  const response = await fetch(`${API_BASE_URL}/foods/${foodId}`, {
+    method: 'DELETE',
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  })
+
+  if (!response.ok) {
+    const data = await response.json()
+    throw new Error(data.detail || 'Failed to delete food.')
+  }
+
+  return true
+}
