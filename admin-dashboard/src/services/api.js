@@ -1,7 +1,17 @@
 const API_BASE_URL = 'http://127.0.0.1:8000'
 
 export async function getFoods() {
-  const response = await fetch(`${API_BASE_URL}/foods/`)
+  const token = sessionStorage.getItem('admin_token')
+
+  if (!token) {
+    throw new Error('Please sign in as an administrator.')
+  }
+
+  const response = await fetch(`${API_BASE_URL}/foods/admin/all`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  })
 
   if (!response.ok) {
     throw new Error('Failed to fetch foods')
@@ -123,4 +133,30 @@ export async function deleteFood(foodId) {
   }
 
   return true
+}
+export async function updateFoodAvailability(foodId, isAvailable) {
+  const token = sessionStorage.getItem('admin_token')
+
+  if (!token) {
+    throw new Error('Please sign in as an administrator.')
+  }
+
+  const response = await fetch(`${API_BASE_URL}/foods/${foodId}`, {
+    method: 'PATCH',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({
+      is_available: isAvailable,
+    }),
+  })
+
+  const data = await response.json()
+
+  if (!response.ok) {
+    throw new Error(data.detail || 'Failed to update food availability.')
+  }
+
+  return data
 }

@@ -26,6 +26,17 @@ def get_foods(db: Session = Depends(get_db)):
 
     return foods
 
+@router.get("/admin/all", response_model=list[FoodResponse])
+def get_all_foods(
+    db: Session = Depends(get_db),
+    admin: User = Depends(get_current_admin),
+):
+    statement = select(Food).order_by(Food.id.desc())
+
+    foods = db.scalars(statement).all()
+
+    return foods
+
 @router.post(
     "/",
     response_model=FoodResponse,

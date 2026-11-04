@@ -1,5 +1,9 @@
 import { useEffect, useState } from 'react'
-import { getFoods, deleteFood } from '../services/api'
+import {
+  getFoods,
+  deleteFood,
+  updateFoodAvailability,
+} from '../services/api'
 import { Link } from 'react-router-dom'
 
 function FoodManagement() {
@@ -7,6 +11,22 @@ function FoodManagement() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
 
+  async function handleAvailabilityChange(food) {
+  try {
+    const updatedFood = await updateFoodAvailability(
+      food.id,
+      !food.is_available
+    )
+
+    setFoods((previousFoods) =>
+      previousFoods.map((item) =>
+        item.id === food.id ? updatedFood : item
+      )
+    )
+  } catch (err) {
+    alert(err.message)
+  }
+}
 
   async function handleDelete(food) {
   const confirmed = window.confirm(
@@ -84,8 +104,23 @@ function FoodManagement() {
                 <td>{food.category}</td>
                 <td>{food.price} ETB</td>
                 <td>
-                  {food.is_available ? 'Available' : 'Unavailable'}
-                </td>
+  <span
+    className={
+      food.is_available
+        ? 'availability-badge available'
+        : 'availability-badge unavailable'
+    }
+  >
+    {food.is_available ? 'Available' : 'Unavailable'}
+  </span>
+
+  <button
+    className="availability-button"
+    onClick={() => handleAvailabilityChange(food)}
+  >
+    {food.is_available ? 'Mark Unavailable' : 'Make Available'}
+  </button>
+</td>
                 <td className="food-actions">
   <Link to={`/foods/${food.id}/edit`} className="edit-button">
     Edit
