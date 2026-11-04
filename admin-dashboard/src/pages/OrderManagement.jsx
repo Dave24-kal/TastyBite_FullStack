@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom'
 import { useEffect, useState } from 'react'
 import { getOrders } from '../services/api'
 
@@ -48,6 +49,7 @@ function OrderManagement() {
               <th>Total Amount</th>
               <th>Status</th>
               <th>Order Date</th>
+              <th>Actions</th>
             </tr>
           </thead>
 
@@ -59,6 +61,13 @@ function OrderManagement() {
                 <td>{order.customer_phone}</td>
                 <td>{order.total_amount} ETB</td>
                 <td>{order.status}</td>
+                <td>{new Date(order.created_at).toLocaleString()}</td>
+                <td>
+  <Link to={`/orders/${order.id}`} className="edit-button">
+    View Details
+  </Link>
+</td>
+                
                 <td>
                   {new Date(order.created_at).toLocaleString()}
                 </td>

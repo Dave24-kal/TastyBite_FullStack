@@ -11,6 +11,7 @@ import AdminLogin from './pages/AdminLogin'
 import ProtectedRoute from './components/ProtectedRoute'
 import EditFood from './pages/EditFood'
 import OrderManagement from './pages/OrderManagement'
+import OrderDetails from './pages/OrderDetails'
 
 function AdminLayout() {
   return (
@@ -39,6 +40,7 @@ function App() {
             <Route path="foods" element={<FoodManagement />} />
             <Route path="foods/add" element={<AddFood />} />
             <Route path="orders" element={<OrderManagement />} />
+            <Route path="orders/:orderId" element={<OrderDetails />} />
             <Route path="foods/:foodId/edit" element={<EditFood />} />
           </Route>
         </Route>

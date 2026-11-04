@@ -181,3 +181,33 @@ export async function getOrders() {
 
   return data
 }
+// Update an order's status
+export async function updateOrderStatus(orderId, newStatus) {
+  const token = sessionStorage.getItem('admin_token')
+
+  if (!token) {
+    throw new Error('Please sign in as an administrator.')
+  }
+
+  const response = await fetch(
+    `${API_BASE_URL}/orders/${orderId}/status`,
+    {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({
+        status: newStatus,
+      }),
+    }
+  )
+
+  const data = await response.json()
+
+  if (!response.ok) {
+    throw new Error(data.detail || 'Failed to update order status.')
+  }
+
+  return data
+}

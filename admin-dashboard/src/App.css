@@ -533,3 +533,253 @@
   background: var(--primary);
   color: white;
 }
+/* ==============================
+   ORDER DETAILS PAGE
+============================== */
+
+.order-details-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 24px;
+  margin-top: 24px;
+  margin-bottom: 24px;
+}
+
+.order-detail-card {
+  background: var(--white);
+  padding: 24px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+.order-detail-card h3 {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0 0 20px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--border);
+}
+
+.order-detail-card p {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 14px 0;
+  color: var(--text-secondary);
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.order-detail-card p strong {
+  color: var(--text-primary);
+  min-width: 125px;
+}
+
+.order-items-section {
+  margin-top: 8px;
+  overflow-x: auto;
+}
+
+.order-items-section table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 550px;
+}
+
+.order-items-section th {
+  background: #FFF0E6;
+  color: var(--text-primary);
+  font-weight: 600;
+  text-align: left;
+  padding: 14px 16px;
+  font-size: 13px;
+}
+
+.order-items-section td {
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--border);
+  color: var(--text-secondary);
+  font-size: 14px;
+}
+
+.order-items-section tbody tr:hover {
+  background: #FAFAFA;
+}
+
+.order-food-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: var(--text-primary);
+  font-weight: 500;
+}
+
+.order-food-info img {
+  width: 48px;
+  height: 48px;
+  object-fit: cover;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+}
+
+.order-grand-total {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 40px;
+  padding: 20px 16px 4px;
+  color: var(--text-primary);
+  font-size: 16px;
+}
+
+.order-grand-total strong:last-child {
+  color: var(--primary);
+  font-size: 19px;
+}
+
+/* Back to Orders button */
+
+.order-details-grid + .order-detail-card {
+  margin-top: 8px;
+}
+
+/* Responsive layout for smaller screens */
+
+@media (max-width: 768px) {
+  .order-details-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .order-detail-card {
+    padding: 18px;
+  }
+
+  .order-grand-total {
+    gap: 20px;
+    font-size: 14px;
+  }
+}
+
+@media (max-width: 480px) {
+  .order-detail-card p {
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .order-detail-card p strong {
+    min-width: auto;
+  }
+
+  .order-grand-total {
+    justify-content: space-between;
+    padding-left: 0;
+    padding-right: 0;
+  }
+}
+/* ORDER STATUS MANAGEMENT */
+
+.status-management {
+  margin-bottom: 24px;
+}
+
+.status-management > p {
+  align-items: center;
+}
+
+.status-badge {
+  display: inline-block;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.status-pending {
+  background: #FFF3CD;
+  color: #856404;
+}
+
+.status-confirmed {
+  background: #D1ECF1;
+  color: #0C5460;
+}
+
+.status-preparing {
+  background: #E2D9F3;
+  color: #563D7C;
+}
+
+.status-ready {
+  background: #D4EDDA;
+  color: #155724;
+}
+
+.status-delivered {
+  background: #D1E7DD;
+  color: #0F5132;
+}
+
+.status-cancelled {
+  background: #F8D7DA;
+  color: #721C24;
+}
+
+.status-update-controls {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 20px;
+}
+
+.status-update-controls select {
+  min-width: 200px;
+  padding: 11px 14px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font-size: 14px;
+  outline: none;
+}
+
+.status-update-controls select:focus {
+  border-color: var(--primary);
+}
+
+.status-update-button {
+  padding: 11px 20px;
+  background: var(--primary);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.status-update-button:hover {
+  background: var(--primary-light);
+}
+
+.status-update-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.status-success {
+  color: #198754 !important;
+  font-weight: 600;
+}
+
+@media (max-width: 480px) {
+  .status-update-controls {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .status-update-controls select,
+  .status-update-button {
+    width: 100%;
+  }
+}
