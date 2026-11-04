@@ -18,6 +18,9 @@ function Sidebar() {
   <NavLink to="/foods" className="nav-link">
     Food Management
   </NavLink>
+  <NavLink to="/orders" className="nav-link">
+  <span>Order Management</span>
+</NavLink>
 
   <a href="#" className="nav-link">Orders</a>
 

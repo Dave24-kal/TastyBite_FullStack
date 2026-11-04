@@ -10,6 +10,7 @@ import AddFood from './pages/AddFood'
 import AdminLogin from './pages/AdminLogin'
 import ProtectedRoute from './components/ProtectedRoute'
 import EditFood from './pages/EditFood'
+import OrderManagement from './pages/OrderManagement'
 
 function AdminLayout() {
   return (
@@ -37,6 +38,7 @@ function App() {
             <Route index element={<Dashboard />} />
             <Route path="foods" element={<FoodManagement />} />
             <Route path="foods/add" element={<AddFood />} />
+            <Route path="orders" element={<OrderManagement />} />
             <Route path="foods/:foodId/edit" element={<EditFood />} />
           </Route>
         </Route>

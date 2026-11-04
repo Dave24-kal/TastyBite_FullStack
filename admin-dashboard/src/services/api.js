@@ -160,3 +160,24 @@ export async function updateFoodAvailability(foodId, isAvailable) {
 
   return data
 }
+export async function getOrders() {
+  const token = sessionStorage.getItem('admin_token')
+
+  if (!token) {
+    throw new Error('Please sign in as an administrator.')
+  }
+
+  const response = await fetch(`${API_BASE_URL}/orders/`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  })
+
+  const data = await response.json()
+
+  if (!response.ok) {
+    throw new Error(data.detail || 'Failed to fetch orders.')
+  }
+
+  return data
+}
