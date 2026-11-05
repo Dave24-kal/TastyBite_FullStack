@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.routers import auth, foods, orders
+from app.routers import auth, foods, orders, dashboard
 
 app = FastAPI(title="TastyBite API")
 
@@ -16,6 +16,7 @@ app.add_middleware(
 app.include_router(auth.router)
 app.include_router(foods.router)
 app.include_router(orders.router)
+app.include_router(dashboard.router)
 
 
 @app.get("/")
