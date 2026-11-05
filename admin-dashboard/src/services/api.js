@@ -211,3 +211,28 @@ export async function updateOrderStatus(orderId, newStatus) {
 
   return data
 }
+// Get administrator dashboard statistics
+export async function getDashboardStats() {
+  const token = sessionStorage.getItem('admin_token')
+
+  if (!token) {
+    throw new Error('Please sign in as an administrator.')
+  }
+
+  const response = await fetch(
+    `${API_BASE_URL}/admin/dashboard/stats`,
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  )
+
+  const data = await response.json()
+
+  if (!response.ok) {
+    throw new Error(data.detail || 'Failed to fetch dashboard statistics.')
+  }
+
+  return data
+}

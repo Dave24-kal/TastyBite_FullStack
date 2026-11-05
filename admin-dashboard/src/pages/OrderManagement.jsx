@@ -61,16 +61,16 @@ function OrderManagement() {
                 <td>{order.customer_phone}</td>
                 <td>{order.total_amount} ETB</td>
                 <td>
-  <span className={`status-badge status-${order.status}`}>
-    {order.status.charAt(0).toUpperCase() + order.status.slice(1)}
-  </span>
-</td>
+                  <span className={`status-badge status-${order.status}`}>
+                    {order.status.charAt(0).toUpperCase() + order.status.slice(1)}
+                  </span>
+                </td>
                 <td>{new Date(order.created_at).toLocaleString()}</td>
                 <td>
-  <Link to={`/orders/${order.id}`} className="edit-button">
-    View Details
-  </Link>
-</td>
+                  <Link to={`/orders/${order.id}`} className="edit-button">
+                    View Details
+                    </Link>
+                </td>
                 
                 <td>
                   {new Date(order.created_at).toLocaleString()}
