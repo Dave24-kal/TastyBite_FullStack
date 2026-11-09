@@ -29,6 +29,11 @@ function OrderManagement() {
     loadOrders()
   }, [])
 
+  // Reset pagination when search or status filter changes
+useEffect(() => {
+  setCurrentPage(1)
+}, [searchTerm, statusFilter])
+
   // Filter orders using search and status
   const filteredOrders = orders.filter((order) => {
     const search = searchTerm.toLowerCase()
