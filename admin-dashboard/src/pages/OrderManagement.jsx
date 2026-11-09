@@ -11,6 +11,9 @@ function OrderManagement() {
   const [searchTerm, setSearchTerm] = useState('')
   const [statusFilter, setStatusFilter] = useState('all')
 
+  const [currentPage, setCurrentPage] = useState(1)
+  const ordersPerPage = 10
+
   useEffect(() => {
     async function loadOrders() {
       try {
@@ -39,11 +42,37 @@ function OrderManagement() {
 
     return matchesSearch && matchesStatus
   })
+  // Calculate the positions of orders on the current page
+const indexOfLastOrder = currentPage * ordersPerPage
+
+const indexOfFirstOrder = indexOfLastOrder - ordersPerPage
+
+// Get only the orders belonging to the current page
+const currentOrders = filteredOrders.slice(
+  indexOfFirstOrder,
+  indexOfLastOrder
+)
+
+// Calculate the total number of pages
+const totalPages = Math.ceil(filteredOrders.length / ordersPerPage)
 
   function clearFilters() {
     setSearchTerm('')
     setStatusFilter('all')
   }
+  // Move to the next page
+const nextPage = () => {
+  if (currentPage < totalPages) {
+    setCurrentPage(currentPage + 1)
+  }
+}
+
+// Move to the previous page
+const previousPage = () => {
+  if (currentPage > 1) {
+    setCurrentPage(currentPage - 1)
+  }
+}
 
   if (loading) {
     return <main className="dashboard-content">Loading orders...</main>
@@ -110,7 +139,7 @@ function OrderManagement() {
           </thead>
 
           <tbody>
-            {filteredOrders.map((order) => (
+            {currentOrders.map((order) => (
               <tr key={order.id}>
                 <td>#{order.id}</td>
 
