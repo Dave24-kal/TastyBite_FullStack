@@ -5,6 +5,7 @@ import { getOrders } from '../services/api'
 function OrderManagement() {
   const [orders, setOrders] = useState([])
   const [loading, setLoading] = useState(true)
+  const [refreshing, setRefreshing] = useState(false)
   const [error, setError] = useState('')
 
   // Search and filter states
@@ -28,6 +29,21 @@ function OrderManagement() {
 
     loadOrders()
   }, [])
+  // Refresh orders from the backend
+const handleRefresh = async () => {
+  try {
+    setRefreshing(true)
+    setError('')
+
+    const data = await getOrders()
+
+    setOrders(data)
+  } catch (err) {
+    setError(err.message)
+  } finally {
+    setRefreshing(false)
+  }
+}
 
   // Reset pagination when search or status filter changes
 useEffect(() => {
@@ -89,10 +105,20 @@ const previousPage = () => {
 
   return (
     <main className="dashboard-content">
-      <div className="page-heading">
-        <h2>Order Management</h2>
-        <p>View and manage customer orders.</p>
-      </div>
+      <div className="page-heading order-page-heading">
+  <div>
+    <h2>Order Management</h2>
+    <p>View and manage customer orders.</p>
+  </div>
+
+  <button
+    className="refresh-button"
+    onClick={handleRefresh}
+    disabled={refreshing}
+  >
+    {refreshing ? 'Refreshing...' : 'Refresh Orders'}
+  </button>
+</div>
 
       <div className="recent-orders">
 

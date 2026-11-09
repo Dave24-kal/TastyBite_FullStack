@@ -1001,3 +1001,33 @@
     padding: 9px 14px;
   }
 }
+/* ORDER PAGE REFRESH BUTTON */
+
+.order-page-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 15px;
+  flex-wrap: wrap;
+}
+
+.refresh-button {
+  padding: 11px 20px;
+  background: var(--primary);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.refresh-button:hover:not(:disabled) {
+  background: var(--primary-light);
+}
+
+.refresh-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
