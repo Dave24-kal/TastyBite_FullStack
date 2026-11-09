@@ -176,6 +176,30 @@ const previousPage = () => {
         {filteredOrders.length === 0 && (
           <p>No matching orders found.</p>
         )}
+        {/* Pagination Controls */}
+{filteredOrders.length > 0 && (
+  <div className="pagination">
+
+    <button
+      onClick={previousPage}
+      disabled={currentPage === 1}
+    >
+      Previous
+    </button>
+
+    <span>
+      Page {currentPage} of {totalPages}
+    </span>
+
+    <button
+      onClick={nextPage}
+      disabled={currentPage === totalPages}
+    >
+      Next
+    </button>
+
+  </div>
+)}
 
       </div>
     </main>
