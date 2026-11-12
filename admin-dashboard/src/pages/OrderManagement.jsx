@@ -45,12 +45,6 @@ const handleRefresh = async () => {
   }
 }
 
-  // Reset pagination when search or status filter changes
-useEffect(() => {
-  setCurrentPage(1)
-}, [searchTerm, statusFilter])
-
-  // Filter orders using search and status
   const filteredOrders = orders.filter((order) => {
     const search = searchTerm.toLowerCase()
 
@@ -78,9 +72,10 @@ const currentOrders = filteredOrders.slice(
 const totalPages = Math.ceil(filteredOrders.length / ordersPerPage)
 
   function clearFilters() {
-    setSearchTerm('')
-    setStatusFilter('all')
-  }
+  setSearchTerm('')
+  setStatusFilter('all')
+  setCurrentPage(1)
+}
   // Move to the next page
 const nextPage = () => {
   if (currentPage < totalPages) {
@@ -131,12 +126,18 @@ const previousPage = () => {
             type="text"
             placeholder="Search by order ID or customer name..."
             value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
+            onChange={(e) => {
+  setSearchTerm(e.target.value)
+  setCurrentPage(1)
+}}
           />
 
           <select
             value={statusFilter}
-            onChange={(e) => setStatusFilter(e.target.value)}
+            onChange={(e) => {
+  setStatusFilter(e.target.value)
+  setCurrentPage(1)
+}}
           >
             <option value="all">All Statuses</option>
             <option value="pending">Pending</option>
